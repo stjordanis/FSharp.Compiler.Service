@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Debug emit</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="author" content="F# Software Foundation; Microsoft; F# Contributors">
+
+    <link rel="stylesheet" id="theme_link" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.6.0/materia/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
+
+    <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+    <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
+    <link type="text/css" rel="stylesheet" href="https://fsharp.github.io/fsharp-compiler-docs/content/navbar-fixed-left.css" />
+    <link type="text/css" rel="stylesheet" href="https://fsharp.github.io/fsharp-compiler-docs/content/fsdocs-default.css" />
+    <link type="text/css" rel="stylesheet" href="https://fsharp.github.io/fsharp-compiler-docs/content/fsdocs-custom.css" />
+    <script type="text/javascript" src="https://fsharp.github.io/fsharp-compiler-docs/content/fsdocs-tips.js"></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!-- BEGIN SEARCH BOX: this adds support for the search box -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/JavaScript-autoComplete/1.0.4/auto-complete.css" />
+    <!-- END SEARCH BOX: this adds support for the search box -->
+    
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-md navbar-light bg-secondary fixed-left" id="fsdocs-nav">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse navbar-nav-scroll" id="navbarsExampleDefault">
+            <a href="https://fsharp.github.io/fsharp-compiler-docs/"><img id="fsdocs-logo" src="https://fsharp.github.io/fsharp-compiler-docs/img/logo.png" /></a>
+            <!-- BEGIN SEARCH BOX: this adds support for the search box -->
+            <div id="header">
+                <div class="searchbox" id="fsdocs-searchbox">
+                    <label for="search-by">
+                        <i class="fas fa-search"></i>
+                    </label>
+                    <input data-search-input="" id="search-by" type="search" placeholder="Search..." />
+                    <span data-search-clear="">
+                        <i class="fas fa-times"></i>
+                    </span>
+                </div>
+            </div>
+
+            <!-- END SEARCH BOX: this adds support for the search box -->
+            <ul class="navbar-nav">
+                <li class="nav-header">Links</li>
+                <li class="nav-item" id="fsdocs-license-link"><a class="nav-link" href="https://github.com/dotnet/fsharp/blob/main/License.txt">License</a></li>
+                <li class="nav-item" id="fsdocs-release-notes-link"><a class="nav-link" href="https://github.com/dotnet/fsharp/blob/main/release-notes.md">Release Notes</a></li>
+                <li class="nav-item" id="fsdocs-repository-link"><a class="nav-link" href="https://github.com/dotnet/fsharp/">Source Repository</a></li>
+                <li class="nav-header">
+  Compiler Internals
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/overview.html">
+    Overview
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/coding-standards.html">
+    Coding standards
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/diagnostics.html">
+    Diagnostics
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/debug-emit.html">
+    Debug emit
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/optimizations.html">
+    Optimizations
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/large-inputs-and-stack-overflows.html">
+    Large inputs
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/memory-usage.html">
+    Memory usage
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/compiler-startup-performance.html">
+    Startup Performance
+  </a>
+</li>             
+<li class="nav-header">
+  Language Service Internals
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/tooling-features.html">
+    Overview
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/project-builds.html">
+    Project builds
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/caches.html">
+    FSharpChecker caches
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/react.html">
+    Incrementality
+  </a>
+</li>             
+<li class="nav-header">
+  FSharp.Compiler.Service
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/tokenizer.html">
+    Tutorial: Tokenizing
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/untypedtree.html">
+    Tutorial: Expressions
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/symbols.html">
+    Tutorial: Symbols
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/editor.html">
+    Tutorial: Editor services
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/typedtree.html">
+    Tutorial: Expressions
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/project.html">
+    Tutorial: Project analysis
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/interactive.html">
+    Tutorial: Hosted execution
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/compiler.html">
+    Tutorial: Hosting the compiler
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/corelib.html">
+    Notes on FSharp.Core
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/filesystem.html">
+    IFileSystem
+  </a>
+</li>             
+<li class="nav-header">
+  FSharp.Core
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fsharp-core-notes.html">
+    Guidance
+  </a>
+</li>
+                <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="masthead">
+            <h3 class="muted"><a href="https://fsharp.github.io/fsharp-compiler-docs/">F# Compiler Guide</a></h3>
+        </div>
+        <hr />
+        <div class="container" id="fsdocs-content">
+            
+<h1><a name="Debug-emit" class="anchor" href="#Debug-emit">Debug emit</a></h1>
+<p>The F# compiler code base emits debug information and attributes. This article documents what we do, how it is implemented and the problem areas in our implementation.</p>
+<p>There are mistakes and missing pieces to our debug information. Small improvements can make a major difference. Please help us fix mistakes and get things right.</p>
+<p>The file <code>tests\walkthroughs\DebugStepping\TheBigFileOfDebugStepping.fsx</code> is crucial for testing the stepping experience for a range of constructs.</p>
+<h2><a name="User-experiences" class="anchor" href="#User-experiences">User experiences</a></h2>
+<p>Debugging information affects numerous user experiences:</p>
+<ul>
+<li><strong>Call stacks</strong> during debugging</li>
+<li><strong>Breakpoint placement</strong> before and during debugging</li>
+<li><strong>Locals</strong> during debugging</li>
+<li><strong>Just my code</strong> debugging (which limits the view of debug code to exclude libraries)</li>
+<li><strong>Exception</strong> debugging (e.g. "first chance" debugging when exceptions occur)</li>
+<li><strong>Stepping</strong> debugging</li>
+<li><strong>Watch</strong> window</li>
+<li><strong>Profiling</strong> results</li>
+<li><strong>Code coverage</strong> results</li>
+</ul>
+<p>Some experiences are un-implemented by F# including:</p>
+<ul>
+<li><strong>Autos</strong> during debugging</li>
+<li><strong>Edit and Continue</strong></li>
+<li><strong>Hot reload</strong></li>
+</ul>
+<h2><a name="Emitted-information" class="anchor" href="#Emitted-information">Emitted information</a></h2>
+<p>Emitted debug information includes:</p>
+<ul>
+<li>The names of methods in .NET IL</li>
+<li>
+The PDB file/information (embedded or in PDB file) which contains
+<ul>
+<li>Debug "sequence" points for IL code</li>
+<li>Names of locals and the IL code scopes over which those names are active</li>
+</ul>
+</li>
+<li>The attributes on IL methods such as <code>CompilerGeneratedAttribute</code> and <code>DebuggerNonUserCodeAttribute</code>, wee below</li>
+<li>We add some codegen to give better debug experiences, see below.</li>
+</ul>
+<h2><a name="Design-time-services" class="anchor" href="#Design-time-services">Design-time services</a></h2>
+<p>IDE tooling performs queries into the F# language service, notably:</p>
+<ul>
+<li><code>ValidateBreakpointLocation</code> <a href="https://github.com/dotnet/fsharp/blob/24979b692fc88dc75e2467e30b75667058fd9504/src/fsharp/service/FSharpParseFileResults.fs#L795">(permalink)</a> is called to validate every breakpoint before debugging is launched. This operates on syntax trees. See notes below.</li>
+</ul>
+<h2><a name="Debugging-and-optimization" class="anchor" href="#Debugging-and-optimization">Debugging and optimization</a></h2>
+<p>Nearly all optimizations are <strong>off</strong> when debug code is being generated.</p>
+<ul>
+<li>The optimizer is run for forced inlining only</li>
+<li>List and array expressions do generate collector code</li>
+<li>State machines are generated for tasks and sequences</li>
+<li>"let mutable" --&gt; "ref" promotion happens for captured local mutables</li>
+<li>Tailcalls are off by default and not emitted in IlxGen.</li>
+</ul>
+<p>Otherwise, what comes out of the type checker is pretty much what goes into IlxGen.fs.</p>
+<h2><a name="Debug-points" class="anchor" href="#Debug-points">Debug points</a></h2>
+<h3><a name="Terminology" class="anchor" href="#Terminology">Terminology</a></h3>
+<p>We use the terms "sequence point" and "debug point" interchangeably. The word "sequence" has too many meanings in the F# compiler so in the actual code you'll see "DebugPoint" more often, though for abbreviations you may see <code>spFoo</code> or <code>mFoo</code>.</p>
+<h3><a name="How-breakpoints-work-high-level" class="anchor" href="#How-breakpoints-work-high-level">How breakpoints work (high level)</a></h3>
+<p>Breakpoints have two existences which must give matching behavior:</p>
+<ul>
+<li><p>At design-time, before debugging is launched, <code>ValidateBreakpointLocation</code> is called to validate every breakpoint.  This operators on the SyntaxTree and forms a kind of "gold-standard" about the exact places where break points are valid.</p></li>
+<li>At run-time, breakpoints are "mapped" by the .NET runtime to actual sequence points found in the PDB data for .NET methods. The runtime searches all methods with debug points for the relevant document and determines where to "bind" the actual breakpoint to.  A typical debugger can bind a breakpoint to multiple locations.</li>
+</ul>
+<p>This means there is an invariant that <code>ValidateBreakpointLocation</code> and the emitted IL debug points correspond.</p>
+<blockquote>
+<p>NOTE: The IL code can and does contain extra debug points that don't pass ValidateBreakpointLocation. It won't be possible to set a breakpoint for these, but they will appear in stepping.</p>
+</blockquote>
+<h3><a name="Intended-debug-points-for-control-flow-constructs" class="anchor" href="#Intended-debug-points-for-control-flow-constructs">Intended debug points for control-flow constructs</a></h3>
+<p>The intended debug points for control-flow constructs are as follows:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left"><p>Construct</p></th>
+<th align="left"><p>Debug points</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"><p><code>let ..</code></p></td>
+<td align="left"><p>See below</p></td>
+</tr>
+<tr class="even">
+<td align="left"><p><code>let rec ..</code></p></td>
+<td align="left"><p>Implicit on body</p></td>
+</tr>
+<tr class="odd">
+<td align="left"><p><code>if .. then ..</code></p></td>
+<td align="left"><p><code>if .. then</code> and implicit on body</p></td>
+</tr>
+<tr class="even">
+<td align="left"><p><code>if .. then .. else ..</code></p></td>
+<td align="left"><p><code>if .. then</code> and implicit on branches</p></td>
+</tr>
+<tr class="odd">
+<td align="left"><p><code>match .. with ..</code></p></td>
+<td align="left"><p><code>match .. with</code> and <code>when</code> patterns and implicit on case targets</p></td>
+</tr>
+<tr class="even">
+<td align="left"><p><code>while .. do ..</code></p></td>
+<td align="left"><p><code>while .. do</code> and implicit on body</p></td>
+</tr>
+<tr class="odd">
+<td align="left"><p><code>for .. do</code></p></td>
+<td align="left"><p><code>for .. do</code> and implicit on body</p></td>
+</tr>
+<tr class="even">
+<td align="left"><p><code>try .. with ..</code></p></td>
+<td align="left"><p><code>try</code> and <code>with</code> and implicit on body and handler</p></td>
+</tr>
+<tr class="odd">
+<td align="left"><p><code>try .. finally ..</code></p></td>
+<td align="left"><p><code>try</code> and <code>finally</code> and implicit on body and handler</p></td>
+</tr>
+<tr class="even">
+<td align="left"><p><code>use ..</code></p></td>
+<td align="left"><p>See below for <code>let</code></p></td>
+</tr>
+<tr class="odd">
+<td align="left"><p><code>expr1; expr</code> sequential</p></td>
+<td align="left"><p>On <code>expr1</code> and implicit on <code>expr2</code></p></td>
+</tr>
+<tr class="even">
+<td align="left"><p><code>expr1 &amp;#124;&gt; expr2</code></p></td>
+<td align="left"><p>On <code>expr1</code> and <code>expr2</code></p></td>
+</tr>
+<tr class="odd">
+<td align="left"><p><code>(expr1a, expr1b) &amp;#124;&amp;#124;&gt; expr2</code></p></td>
+<td align="left"><p>On <code>expr1a</code>, <code>expr1b</code> and <code>expr2</code></p></td>
+</tr>
+<tr class="even">
+<td align="left"><p><code>(expr1a, expr1b, expr1c) &amp;#124;&amp;#124;&amp;#124;&gt; expr2</code></p></td>
+<td align="left"><p>On <code>expr1a</code>, <code>expr1b</code> and <code>expr2</code></p></td>
+</tr>
+<tr class="odd">
+<td align="left"><p><code>yield expr</code></p></td>
+<td align="left"><p>On <code>yield expr</code></p></td>
+</tr>
+<tr class="even">
+<td align="left"><p><code>return expr</code></p></td>
+<td align="left"><p>On <code>return expr</code></p></td>
+</tr>
+</tbody>
+</table>
+
+<p>Some debug points are implicit. In particular, whenever a non-control-flow expression (e.g. a constant or a call) is used in statement position (e.g. as the implementation of a method, or the body of a <code>while</code>) then there is an implicit debug point over the whole statement/expression.</p>
+<h3><a name="Intended-debug-points-for-let-bindings" class="anchor" href="#Intended-debug-points-for-let-bindings">Intended debug points for let-bindings</a></h3>
+<p><code>let</code> bindings get immediate debug points if the thing is not a function and the implementation is not control flow. For example</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="fn">f</span> <span class="pn">(</span><span class="pn">)</span> <span class="o">=</span>
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="fn">x</span> <span class="o">=</span> <span class="n">1</span> <span class="c">// debug point for whole of `let x = 1`</span>
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="fn">f</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="fn">x</span> <span class="o">=</span> <span class="n">1</span> <span class="c">// no debug point on `let f x =`, debug point on `1`</span>
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs2', 5)" onmouseover="showTip(event, 'fs2', 5)" class="fn">x</span> <span class="o">=</span> <span class="k">if</span> <span class="id">today</span> <span class="k">then</span> <span class="n">1</span> <span class="k">else</span> <span class="id">tomorrow</span> <span class="c">// no debug point on `let x =`, debug point on `if today then` and `1` and `tomorrow`</span>
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs2', 6)" onmouseover="showTip(event, 'fs2', 6)" class="fn">x</span> <span class="o">=</span> <span class="k">let</span> <span onmouseout="hideTip(event, 'fs5', 7)" onmouseover="showTip(event, 'fs5', 7)" class="fn">y</span> <span class="o">=</span> <span class="n">1</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs5', 8)" onmouseover="showTip(event, 'fs5', 8)" class="fn">y</span> <span class="o">+</span> <span onmouseout="hideTip(event, 'fs5', 9)" onmouseover="showTip(event, 'fs5', 9)" class="fn">y</span> <span class="c">// no debug point on `let x =`, debug point on `let y = 1` and `y + y`</span>
+    <span class="o">..</span><span class="pn">.</span>
+</code></pre>
+<h3><a name="Intended-debug-points-for-nested-control-flow" class="anchor" href="#Intended-debug-points-for-nested-control-flow">Intended debug points for nested control-flow</a></h3>
+<p>Debug points are not generally emitted for non-statement constructs, e.g. consider:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs6', 10)" onmouseover="showTip(event, 'fs6', 10)" class="fn">h1</span> <span onmouseout="hideTip(event, 'fs7', 11)" onmouseover="showTip(event, 'fs7', 11)" class="fn">x</span> <span class="o">=</span> <span class="id">g</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs1', 12)" onmouseover="showTip(event, 'fs1', 12)" class="id">f</span> <span onmouseout="hideTip(event, 'fs7', 13)" onmouseover="showTip(event, 'fs7', 13)" class="id">x</span><span class="pn">)</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs8', 14)" onmouseover="showTip(event, 'fs8', 14)" class="fn">h2</span> <span onmouseout="hideTip(event, 'fs9', 15)" onmouseover="showTip(event, 'fs9', 15)" class="fn">x</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs9', 16)" onmouseover="showTip(event, 'fs9', 16)" class="fn">x</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs1', 17)" onmouseover="showTip(event, 'fs1', 17)" class="fn">f</span> <span class="o">|&gt;</span> <span class="id">g</span>
+</code></pre>
+<p>Here <code>g (f x)</code> gets one debug point. Note that the corresponding pipelining gets three debug points.</p>
+<p>If however a nested expression is control-flow, then debug points start being emitted again e.g.</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs10', 18)" onmouseover="showTip(event, 'fs10', 18)" class="fn">h3</span> <span onmouseout="hideTip(event, 'fs7', 19)" onmouseover="showTip(event, 'fs7', 19)" class="fn">x</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs1', 20)" onmouseover="showTip(event, 'fs1', 20)" class="fn">f</span> <span class="pn">(</span><span class="k">if</span> <span class="id">today</span> <span class="k">then</span> <span class="n">1</span> <span class="k">else</span> <span class="n">2</span><span class="pn">)</span>
+</code></pre>
+<p>Here debug points are at <code>if today then</code> and <code>1</code> and <code>2</code> and all of <code>f (if today then 1 else 2)</code></p>
+<blockquote>
+<p>NOTE: these debug points are overlapping</p>
+</blockquote>
+<h3><a name="Intended-debug-points-for-code" class="anchor" href="#Intended-debug-points-for-code">Intended debug points for <code>[...]</code>, <code>[| ... |]</code> code</a></h3>
+<p>The intended debug points for these constructs are the same as for the expressions inside the constructs. For example</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs11', 21)" onmouseover="showTip(event, 'fs11', 21)" class="id">x</span> <span class="o">=</span> <span class="pn">[</span> <span class="k">for</span> <span onmouseout="hideTip(event, 'fs12', 22)" onmouseover="showTip(event, 'fs12', 22)" class="fn">i</span> <span class="k">in</span> <span class="n">1</span> <span class="o">..</span> <span class="n">10</span> <span class="k">do</span> <span class="k">yield</span> <span class="n">1</span> <span class="pn">]</span>
+</code></pre>
+<p>This will have debug points on <code>for i in 1 .. 10 do</code> and <code>yield 1</code>.</p>
+<h3><a name="Intended-debug-points-for-and-code" class="anchor" href="#Intended-debug-points-for-and-code">Intended debug points for <code>seq { .. }</code> and <code>task { .. }</code> code</a></h3>
+<p>The intended debug points for tasks is the same as for the expressions inside the constructs. For example</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs13', 23)" onmouseover="showTip(event, 'fs13', 23)" class="fn">f</span><span class="pn">(</span><span class="pn">)</span> <span class="o">=</span> <span class="id">task</span> <span class="pn">{</span> <span class="k">for</span> <span class="id">i</span> <span class="k">in</span> <span class="n">1</span> <span class="o">..</span> <span class="n">10</span> <span class="k">do</span> <span onmouseout="hideTip(event, 'fs14', 24)" onmouseover="showTip(event, 'fs14', 24)" class="id">printfn</span> <span class="s">&quot;hello&quot;</span> <span class="pn">}</span>
+</code></pre>
+<p>This will have debug points on <code>for i in 1 .. 10 do</code> and <code>printfn "hello"</code>.</p>
+<blockquote>
+<p>NOTE: there are glitches, see further below</p>
+</blockquote>
+<h3><a name="Intended-debug-points-for-other-computation-expressions" class="anchor" href="#Intended-debug-points-for-other-computation-expressions">Intended debug points for other computation expressions</a></h3>
+<p>Other computation expressions such as <code>async { .. }</code> have significant problems with their debug points, for multiple reasons:</p>
+<ul>
+<li>The debug points are largely lost during de-sugaring</li>
+<li>The computations are often "cold-start" anyway, leading to a two-phase debug problem</li>
+</ul>
+<p>See further below. In practice debug points can often be placed for user code, e.g. sequential imperative statements or <code>let</code> bindings. However debug points for control constructs are often lossy or buggy.</p>
+<h2><a name="Implementation-of-debug-points-in-the-compiler" class="anchor" href="#Implementation-of-debug-points-in-the-compiler">Implementation of debug points in the compiler</a></h2>
+<p>Most (but not all) debug points are noted by the parser by adding <code>DebugPointAtTarget</code>, <code>DebugPointAtSwitch</code>, <code>DebugPointAtSequential</code>, <code>DebugPointAtTry</code>, <code>DebugPointAtWith</code>, <code>DebugPointAtFinally</code>, <code>DebugPointAtFor</code>, <code>DebugPointAtWhile</code> or <code>DebugPointAtBinding</code>.</p>
+<p>These are then used by <code>ValidateBreakpointLocation</code>. These same values are also propagated unchanged all the way through to <code>IlxGen.fs</code> for actual code generation, and used for IL emit, e.g. a simple case like this:</p>
+<pre class="fssnip highlighted"><code lang="fsharp">    <span class="k">match</span> <span class="id">spTry</span> <span class="k">with</span>
+    <span class="pn">|</span> <span class="id">DebugPointAtTry</span><span class="pn">.</span><span class="id">Yes</span> <span class="id">m</span> <span class="k">-&gt;</span> <span class="id">CG</span><span class="pn">.</span><span class="id">EmitDebugPoint</span> <span class="id">cgbuf</span> <span class="id">m</span> <span class="o">..</span><span class="pn">.</span> 
+    <span class="pn">|</span> <span class="id">DebugPointAtTry</span><span class="pn">.</span><span class="id">No</span> <span class="k">-&gt;</span> <span class="o">..</span><span class="pn">.</span>
+    <span class="o">..</span><span class="pn">.</span>
+</code></pre>
+<p>For many constructs this is adequate. However, in practice the situation is far more complicated.</p>
+<h3><a name="Internals-Implicit-debug-points" class="anchor" href="#Internals-Implicit-debug-points">Internals: Implicit debug points</a></h3>
+<p>Internally in the compiler, some debug points are implicit. In particular, whenever a non-control-flow expression (e.g. a constant or a call) is used in statement position (e.g. as the implementation of a method, or the body of a <code>while</code>) then there is an implicit debug point.</p>
+<ul>
+<li>"Statement position" is tracked by the <code>spAlways</code> argument within ValidateBreakpointLocation (<a href="https://github.com/dotnet/fsharp/blob/24979b692fc88dc75e2467e30b75667058fd9504/src/fsharp/service/FSharpParseFileResults.fs#L481">permalink</a>)</li>
+<li>"Statement position" is similarly tracked by <code>SPAlways</code> within IlxGen.fs <a href="https://github.com/dotnet/fsharp/blob/24979b692fc88dc75e2467e30b75667058fd9504/src/fsharp/IlxGen.fs#L2290">permalink</a></li>
+</ul>
+<p>Implicit debug points but they also arise in some code-generated constructs or in backup paths in the compiler implementation. In general we want to remove or reduce the occurrence of these and make things more explicit. However they still exist, especially for "lowered" constructs.</p>
+<blockquote>
+<p>For example, <code>DebugPointAtTry.Body</code> represents a debug point implicitly located on the body of the try (rather than a <code>try</code> keyword).  Searching the source code, this is generated in the "try/finally" implied by a "use x = ..." construct (<a href="https://github.com/dotnet/fsharp/blob/24979b692fc88dc75e2467e30b75667058fd9504/src/fsharp/CheckExpressions.fs#L10337">permalink</a>).  Is a debug point even needed here? Yes, because otherwise the body of the "using" wouldn't get a debug point.</p>
+</blockquote>
+<h3><a name="Internals-Debug-points-for" class="anchor" href="#Internals-Debug-points-for">Internals: Debug points for <code>[...]</code>, <code>[| ... |]</code></a></h3>
+<p>The internal implementation of debug points for list and array expressions is conceptually simple but a little complex.</p>
+<p>Conceptually the task is easy, e.g. <code>[ while check() do yield x + x ]</code> is lowered to code like this:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span class="o">$</span><span class="id">collector</span> <span class="o">=</span> <span class="id">ListCollector</span><span class="pn">&lt;</span><span onmouseout="hideTip(event, 'fs15', 25)" onmouseover="showTip(event, 'fs15', 25)" class="id">int</span><span class="pn">&gt;</span><span class="pn">(</span><span class="pn">)</span>
+<span class="k">while</span> <span class="id">check</span><span class="pn">(</span><span class="pn">)</span> <span class="k">do</span>
+    <span class="o">$</span><span class="id">collector</span><span class="pn">.</span><span class="id">Add</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs11', 26)" onmouseover="showTip(event, 'fs11', 26)" class="id">x</span><span class="o">+</span><span onmouseout="hideTip(event, 'fs11', 27)" onmouseover="showTip(event, 'fs11', 27)" class="id">x</span><span class="pn">)</span>
+<span class="o">$</span><span class="id">collector</span><span class="pn">.</span><span class="id">Close</span><span class="pn">(</span><span class="pn">)</span>
+</code></pre>
+<p>Note the <code>while</code> loop is still a <code>while</code> loop - no magic here - and the debug points for the <code>while</code> loop can also apply to the actual generated <code>for</code> loop.</p>
+<p>However, the actual implementation is more complicated because there is a TypedTree representation of the code in-between that at first seems to bear little resemblance to what comes in.</p>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip"><code lang="text">SyntaxTree --[CheckComputationExpressions.fs]--&gt; TypedTree --&gt; IlxGen --&gt;[LowerComputedListOrArrayExpr.fs]--&gt; IlxGen
+</code></pre></td></tr></table>
+<p>The TypedTree is a functional encoding into <code>Seq.toList</code>, <code>Seq.singleton</code> and so on. How do the debug points get propagated?</p>
+<ul>
+<li>In <a href="https://github.com/dotnet/fsharp/blob/db2c9da8d1e76d11217d6da53a64253fd0df0246/src/fsharp/CheckComputationExpressions.fs#L1783-L1787"><code>CheckComputationExpressions.fs</code></a> we "note" the debug point for the For loop and attach it to one of the lambdas generated in the TypedTreeForm</li>
+<li>In <a href="https://github.com/dotnet/fsharp/blob/db2c9da8d1e76d11217d6da53a64253fd0df0246/src/fsharp/LowerCallsAndSeqs.fs#L138-L139"><code>LowerCallsAndSeq.fs</code></a> we "recover" the debug point from precisely that lambda.</li>
+<li>This becomes <a href="https://github.com/dotnet/fsharp/blob/db2c9da8d1e76d11217d6da53a64253fd0df0246/src/fsharp/LowerCallsAndSeqs.fs#L887">an actual debug point in the actual generated "while" loop</a></li>
+</ul>
+<p>This then gives accurate debug points for these constructs.</p>
+<h3><a name="Internals-debug-points-for-code" class="anchor" href="#Internals-debug-points-for-code">Internals: debug points for <code>seq { .. .}</code> code</a></h3>
+<p>Debug points for <code>seq { .. }</code> compiling to state machines poses similar problems.</p>
+<ul>
+<li>The de-sugaring is as for list and array expressions</li>
+<li>The debug points are recovered in the state machine generation, for example <a href="https://github.com/dotnet/fsharp/blob/db2c9da8d1e76d11217d6da53a64253fd0df0246/src/fsharp/LowerCallsAndSeqs.fs#L367">here (permalink)</a></li>
+</ul>
+<h3><a name="Internals-debug-points-for-code-1" class="anchor" href="#Internals-debug-points-for-code-1">Internals: debug points for <code>task { .. .}</code> code</a></h3>
+<p>Debug points for <code>task { .. }</code> poses much harder problems. We use "while" loops as an example:</p>
+<ul>
+<li>The de-sugaring is for computation expressions, and in CheckComputationExpressions.fs "notes" the debug point ranges for the relevant constructs attaching them to the <code>task.While(...)</code> call (<a href="https://github.com/dotnet/fsharp/blob/db2c9da8d1e76d11217d6da53a64253fd0df0246/src/fsharp/CheckComputationExpressions.fs#L960">example permalink</a>)</li>
+<li>The code is then checked and optimized, and all the resumable code is inlined, e.g. <a href="https://github.com/dotnet/fsharp/blob/db2c9da8d1e76d11217d6da53a64253fd0df0246/src/fsharp/FSharp.Core/tasks.fs#L64"><code>task.While</code></a> becomes <a href="https://github.com/dotnet/fsharp/blob/db2c9da8d1e76d11217d6da53a64253fd0df0246/src/fsharp/FSharp.Core/resumable.fs#L176-L191"><code>Resumable.While</code></a> which contains a resumable code while loop.</li>
+<li>When inlining the code for <code>task.While(...)</code> and all associated transitive inlining, the <code>remarkExpr</code> routine is invoked as usual to rewrite all ranges throughout all inlined code to be the range of the outer expression, that is, precisely the earlier noted range. Now <a href="https://github.com/dotnet/fsharp/blob/db2c9da8d1e76d11217d6da53a64253fd0df0246/src/fsharp/TypedTreeOps.fs#L5827-L5832"><code>remarkExpr</code> is "hacked" to note that the actual resumable "while" loop is being inlined at a noted range</a>, and places a debug point for that resumable while loop.</li>
+<li>The debug ranges are now attached to the resumable code which is then checked for resumable-code validity and emitted, e.g. see <a href="https://github.com/dotnet/fsharp/blob/db2c9da8d1e76d11217d6da53a64253fd0df0246/src/fsharp/LowerStateMachines.fs#L298">this</a></li>
+</ul>
+<p>This however only works fully for those constructs with a single debug point that can be recovered. In particular <code>TryWith</code> and <code>TryFinally</code> have separate problems</p>
+<ul>
+<li><code>task.TryWith(...)</code> becomes a resumable code try/with, see <a href="https://github.com/dotnet/fsharp/blob/db2c9da8d1e76d11217d6da53a64253fd0df0246/src/fsharp/FSharp.Core/resumable.fs#L216-L230">here</a></li>
+<li><code>task.TryFinally(...)</code> becomes a resumable code try/with, see <a href="https://github.com/dotnet/fsharp/blob/db2c9da8d1e76d11217d6da53a64253fd0df0246/src/fsharp/FSharp.Core/resumable.fs#L272-L305">here</a></li>
+<li>Some debug points associated with these <code>try/with</code> are suppressed in <a href="https://github.com/dotnet/fsharp/blob/db2c9da8d1e76d11217d6da53a64253fd0df0246/src/fsharp/TypedTreeOps.fs#L5862-L5880"><code>remarkExpr</code></a></li>
+<li>The debug points for the <code>with</code> and <code>finally</code> are not currently recovered.</li>
+</ul>
+<h3><a name="Internals-debug-points-for-other-computation-expressions" class="anchor" href="#Internals-debug-points-for-other-computation-expressions">Internals: debug points for other computation expressions</a></h3>
+<p>As mentioned above, other computation expressions such as <code>async { .. }</code> have significant problems with their debug points.</p>
+<blockquote>
+<p>NOTE: A systematic solution for quality debugging of computation expressions and resumable code is still elusive.  It really needs the de-sugaring to explicitly or implicitly pass down the debug points through the process of inlining code.  For example consider the de-sugaring:</p>
+</blockquote>
+<pre class="fssnip highlighted"><code lang="fsharp">   <span class="id">builder</span> <span class="pn">{</span> <span class="k">for</span> <span onmouseout="hideTip(event, 'fs11', 28)" onmouseover="showTip(event, 'fs11', 28)" class="id">x</span> <span class="k">in</span> <span class="id">xs</span> <span class="k">do</span> <span class="o">..</span><span class="pn">.</span> <span class="pn">}</span> <span class="o">--&gt;</span> <span class="id">builder</span><span class="pn">.</span><span class="id">For</span><span class="pn">(</span><span class="id">xs</span><span class="pn">,</span> <span class="k">fun</span> <span onmouseout="hideTip(event, 'fs11', 29)" onmouseover="showTip(event, 'fs11', 29)" class="id">x</span> <span class="k">-&gt;</span> <span class="o">..</span><span class="pn">.</span><span class="pn">)</span>
+</code></pre>
+<p>Here the debug points could be made explicit and passed as "compile-time parameters" (assuming inlining)</p>
+<pre class="fssnip highlighted"><code lang="fsharp">   <span class="id">builder</span> <span class="pn">{</span> <span class="k">for</span><span class="pn">[</span><span class="id">dp</span><span class="pn">]</span> <span onmouseout="hideTip(event, 'fs11', 30)" onmouseover="showTip(event, 'fs11', 30)" class="id">x</span> <span class="k">in</span> <span class="id">xs</span> <span class="k">do</span> <span class="o">..</span><span class="pn">.</span> <span class="pn">}</span> <span class="o">--&gt;</span> <span class="id">builder</span><span class="pn">.</span><span class="id">For</span><span class="pn">(</span><span class="id">dp</span><span class="pn">,</span> <span class="id">xs</span><span class="pn">,</span> <span class="k">fun</span> <span onmouseout="hideTip(event, 'fs11', 31)" onmouseover="showTip(event, 'fs11', 31)" class="id">x</span> <span class="k">-&gt;</span> <span class="o">..</span><span class="pn">.</span><span class="pn">)</span>
+</code></pre>
+<p>These could then be used in the implementation:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span class="id">MuBuilder</span><span class="pn">(</span><span class="pn">)</span> <span class="o">=</span>
+    <span class="c">// Some builder implementation of &quot;For&quot; - let&#39;s say it prints at each iteration of the loop</span>
+    <span class="k">member</span> <span class="k">inline</span> <span class="id">_</span><span class="pn">.</span><span class="id">For</span><span class="pn">(</span><span class="id">dp</span><span class="pn">,</span> <span class="id">xs</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs13', 32)" onmouseover="showTip(event, 'fs13', 32)" class="id">f</span><span class="pn">)</span> <span class="o">=</span>
+        <span class="k">for</span><span class="pn">[</span><span class="id">dp</span><span class="pn">]</span> <span onmouseout="hideTip(event, 'fs11', 33)" onmouseover="showTip(event, 'fs11', 33)" class="id">x</span> <span class="k">in</span> <span class="id">xs</span> <span class="k">do</span>
+           <span onmouseout="hideTip(event, 'fs14', 34)" onmouseover="showTip(event, 'fs14', 34)" class="id">printfn</span> <span class="s">&quot;loop...&quot;</span>
+           <span onmouseout="hideTip(event, 'fs13', 35)" onmouseover="showTip(event, 'fs13', 35)" class="id">f</span> <span onmouseout="hideTip(event, 'fs11', 36)" onmouseover="showTip(event, 'fs11', 36)" class="id">x</span>
+</code></pre>
+<p>Adding such compile-time parameters would be over-kill, but it may be possible to augment the compiler to keep a well-specified environment through the process of inlining, e.g.</p>
+<pre class="fssnip highlighted"><code lang="fsharp">   <span class="id">builder</span> <span class="pn">{</span> <span class="k">for</span><span class="pn">[</span><span class="id">dp</span><span class="pn">]</span> <span onmouseout="hideTip(event, 'fs11', 37)" onmouseover="showTip(event, 'fs11', 37)" class="id">x</span> <span class="k">in</span> <span class="id">xs</span> <span class="k">do</span> <span class="o">..</span><span class="pn">.</span> <span class="pn">}</span> <span class="o">--&gt;</span> <span class="id">builder</span><span class="pn">.</span><span class="id">For</span><span class="pn">[</span><span class="s">&quot;for-debug-point&quot;</span><span class="o">--&gt;</span><span class="id">dp</span><span class="pn">]</span><span class="pn">(</span><span class="id">xs</span><span class="pn">,</span> <span class="k">fun</span> <span onmouseout="hideTip(event, 'fs11', 38)" onmouseover="showTip(event, 'fs11', 38)" class="id">x</span> <span class="k">-&gt;</span> <span class="o">..</span><span class="pn">.</span><span class="pn">)</span>
+</code></pre>
+<p>And then there is some way to access this and attach to various control constructs:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span class="id">MuBuilder</span><span class="pn">(</span><span class="pn">)</span> <span class="o">=</span>
+    <span class="c">// Some builder implementation of &quot;For&quot; - let&#39;s say it prints at each iteration of the loop</span>
+    <span class="k">member</span> <span class="k">inline</span> <span class="id">_</span><span class="pn">.</span><span class="id">For</span><span class="pn">(</span><span class="id">dp</span><span class="pn">,</span> <span class="id">xs</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs13', 39)" onmouseover="showTip(event, 'fs13', 39)" class="id">f</span><span class="pn">)</span> <span class="o">=</span>
+        <span class="k">for</span><span class="pn">[</span><span class="s">&quot;for-debug-point&quot;</span><span class="pn">]</span> <span onmouseout="hideTip(event, 'fs11', 40)" onmouseover="showTip(event, 'fs11', 40)" class="id">x</span> <span class="k">in</span> <span class="id">xs</span> <span class="k">do</span>
+           <span onmouseout="hideTip(event, 'fs14', 41)" onmouseover="showTip(event, 'fs14', 41)" class="id">printfn</span> <span class="s">&quot;loop...&quot;</span>
+           <span onmouseout="hideTip(event, 'fs13', 42)" onmouseover="showTip(event, 'fs13', 42)" class="id">f</span> <span onmouseout="hideTip(event, 'fs11', 43)" onmouseover="showTip(event, 'fs11', 43)" class="id">x</span>
+</code></pre>
+<p>If carefully used this would allow reasonable debugging across multiple-phase boundaries.</p>
+<blockquote>
+<p>NOTE: The use of library code to implement "async" and similar computation expressions also interacts badly with "Just My Code" debugging, see <a href="https://github.com/dotnet/fsharp/issues/5539">https://github.com/dotnet/fsharp/issues/5539</a> for example.
+NOTE: The use of many functions to implement "async" and friends implements badly with "Step Into" and "Step Over" and related attributes, see for example <a href="https://github.com/dotnet/fsharp/issues/3359">https://github.com/dotnet/fsharp/issues/3359</a></p>
+</blockquote>
+<h3><a name="FeeFee-and-F00F00-debug-points-Hidden-and-JustMyCodeWithNoSource" class="anchor" href="#FeeFee-and-F00F00-debug-points-Hidden-and-JustMyCodeWithNoSource">FeeFee and F00F00 debug points (Hidden and JustMyCodeWithNoSource)</a></h3>
+<p>Some fragments of code use constructs generate calls and other IL code that should not have debug points and not participate in "Step Into", for example. These are generated in IlxGen as "FeeFee" debug points. See the <a href="https://docs.microsoft.com/en-us/dotnet/api/system.reflection.metadata.sequencepoint.hiddenline?view=net-5.0">old blog post on this</a>.</p>
+<blockquote>
+<p>TODO: There is also the future prospect of generating <code>JustMyCodeWithNoSource</code> (0xF00F00) debug points but these are not yet emitted by F#.  We should check what this is and when the C# compiler emits these.
+NOTE: We always make space for a debug point at the head of each method by <a href="https://github.com/dotnet/fsharp/blob/main/src/fsharp/IlxGen.fs#L1953">emitting a FeeFee debug sequence point</a>. This may be immediately replaced by a "real" debug point <a href="https://github.com/dotnet/fsharp/blob/main/src/fsharp/IlxGen.fs#L2019">here</a>.</p>
+</blockquote>
+<h2><a name="Generated-code" class="anchor" href="#Generated-code">Generated code</a></h2>
+<p>The F# compiler generates entire IL classes and methods for constructs such as records, closures, state machines and so on. Each time code is generated we must carefully consider what attributes and debug points are generated.</p>
+<h3><a name="Generated-augment-methods-for-records-unions-and-structs" class="anchor" href="#Generated-augment-methods-for-records-unions-and-structs">Generated "augment" methods for records, unions and structs</a></h3>
+<p>We currently always emit a debug sequence point for all generated code coming from AugmentWithHashCompare.fs (also  anything coming out of optimization etc.)  The <code>SPAlways</code> at <a href="https://github.com/dotnet/fsharp/blob/main/src/fsharp/IlxGen.fs#L4801">https://github.com/dotnet/fsharp/blob/main/src/fsharp/IlxGen.fs#L4801</a> has the effect that a debug point based on the range of the method will always appear.</p>
+<h3><a name="Generated-New-Is-Tag-etc-for-unions" class="anchor" href="#Generated-New-Is-Tag-etc-for-unions">Generated "New<em>", "Is</em>", "Tag" etc. for unions</a></h3>
+<p>Discriminated unions generate <code>NewXYZ</code>, <code>IsXYZ</code>, <code>Tag</code> etc. members and the implementations of these lay down debug points. See <a href="https://github.com/dotnet/fsharp/blob/db2c9da8d1e76d11217d6da53a64253fd0df0246/src/fsharp/ilx/EraseUnions.fs#L644">here</a> for the data that drives this and track back and forth to the production and consumption points of that data.</p>
+<p>These all get <code>CompilerGeneratedAttribute</code>, and <code>DebuggerNonUserCodeAttribute</code>, e.g. <a href="https://github.com/dotnet/fsharp/blob/db2c9da8d1e76d11217d6da53a64253fd0df0246/src/fsharp/ilx/EraseUnions.fs#L635">here (permalink)</a></p>
+<blockquote>
+<p>TODO: generating debug points for these appears wrong, being assessed at time of writing
+TODO: we should also consider emitting <code>ExcludeFromCodeCoverageAttribute</code>, being assessed at time of writing</p>
+</blockquote>
+<h3><a name="Generated-closures-for-lambdas" class="anchor" href="#Generated-closures-for-lambdas">Generated closures for lambdas</a></h3>
+<p>The debug codegen involved in closures is as follows:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left"><p>Source</p></th>
+<th align="left"><p>Construct</p></th>
+<th align="left"><p>Debug Points</p></th>
+<th align="left"><p>Attributes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"><p>(fun x -&gt; ...)</p></td>
+<td align="left"><p>Closure class</p></td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left"><p><code>.ctor</code> method</p></td>
+<td align="left"><p><a href="https://github.com/dotnet/fsharp/blob/db2c9da8d1e76d11217d6da53a64253fd0df0246/src/fsharp/ilx/EraseClosures.fs#L584">none</a></p></td>
+<td align="left"><p>CompilerGenerated, DebuggerNonUserCode</p></td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"><p><code>Invoke</code> method</p></td>
+<td align="left"><p>from body of closure</p></td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left"><p>generic local defn</p></td>
+<td align="left"><p>Closure class</p></td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"><p><code>.ctor</code> method</p></td>
+<td align="left"><p><a href="https://github.com/dotnet/fsharp/blob/db2c9da8d1e76d11217d6da53a64253fd0df0246/src/fsharp/ilx/EraseClosures.fs#L486">none</a></p></td>
+<td align="left"><p>CompilerGenerated, DebuggerNonUserCode</p></td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left"><p><code>Specialize</code> method</p></td>
+<td align="left"><p>from body of closure</p></td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left"><p>Intermediate closure classes</p></td>
+<td align="left"><p>For long curried closures <code>fun a b c d e f -&gt; ...</code>.</p></td>
+<td align="left"><p>See <a href="https://github.com/dotnet/fsharp/blob/db2c9da8d1e76d11217d6da53a64253fd0df0246/src/fsharp/ilx/EraseClosures.fs#L459">here</a> and <a href="https://github.com/dotnet/fsharp/blob/db2c9da8d1e76d11217d6da53a64253fd0df0246/src/fsharp/ilx/EraseClosures.fs#L543">here</a>.</p></td>
+<td align="left"><p>CompilerGenerated, DebuggerNonUserCode</p></td>
+</tr>
+</tbody>
+</table>
+
+<blockquote>
+<p>TODO: generating debug points for the intermediate closures appears wrong, this is being assessed at time of writing
+TODO: we should also consider emitting <code>ExcludeFromCodeCoverageAttribute</code>, being assessed at time of writing</p>
+</blockquote>
+<h3><a name="Generated-state-machines-for" class="anchor" href="#Generated-state-machines-for">Generated state machines for <code>seq { .. }</code></a></h3>
+<p>Sequence expressions generate class implementations which resemble closures.</p>
+<p>The debug points recovered for the generated state machine code for <code>seq { ... }</code> is covered up above. The other codegen is as follows:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left"><p>Source</p></th>
+<th align="left"><p>Construct</p></th>
+<th align="left"><p>Debug Points</p></th>
+<th align="left"><p>Attributes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"><p>seq { ... }</p></td>
+<td align="left"><p>State machine class</p></td>
+<td align="left"></td>
+<td align="left"><p>"Closure"</p></td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left"><p><code>.ctor</code> method</p></td>
+<td align="left"><p>none</p></td>
+<td align="left"><p><a href="https://github.com/dotnet/fsharp/blob/db2c9da8d1e76d11217d6da53a64253fd0df0246/src/fsharp/IlxGen.fs#L5150">none</a></p></td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"><p><code>GetFreshEnumerator</code></p></td>
+<td align="left"><p><a href="https://github.com/dotnet/fsharp/blob/db2c9da8d1e76d11217d6da53a64253fd0df0246/src/fsharp/IlxGen.fs#L5108">none</a></p></td>
+<td align="left"><p>CompilerGenerated, DebuggerNonUserCode</p></td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left"><p><code>LastGenerated</code></p></td>
+<td align="left"><p><a href="https://github.com/dotnet/fsharp/blob/db2c9da8d1e76d11217d6da53a64253fd0df0246/src/fsharp/IlxGen.fs#L5146-L5148">none</a></p></td>
+<td align="left"><p>CompilerGenerated, DebuggerNonUserCode</p></td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"><p><code>Close</code></p></td>
+<td align="left"><p><a href="https://github.com/dotnet/fsharp/blob/db2c9da8d1e76d11217d6da53a64253fd0df0246/src/fsharp/IlxGen.fs#L5124-L5127">none</a></p></td>
+<td align="left"><p>none</p></td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left"><p><code>get_CheckClose</code></p></td>
+<td align="left"><p><a href="https://github.com/dotnet/fsharp/blob/db2c9da8d1e76d11217d6da53a64253fd0df0246/src/fsharp/IlxGen.fs#L5130-L5133">none</a></p></td>
+<td align="left"><p>none</p></td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"><p><code>GenerateNext</code></p></td>
+<td align="left"><p>from desugaring, and <a href="https://github.com/dotnet/fsharp/blob/db2c9da8d1e76d11217d6da53a64253fd0df0246/src/fsharp/IlxGen.fs#L5136-L5143">here</a></p></td>
+<td align="left"><p>none</p></td>
+</tr>
+</tbody>
+</table>
+
+<blockquote>
+<p>NOTE: it appears from the code that extraneous debug points are not being generated, which is good, though should be checked
+TODO: we should likely be generating attributes for the <code>Close</code> and <code>get_CheckClose</code> and <code>.ctor</code> methods
+TODO: we should also consider emitting <code>ExcludeFromCodeCoverageAttribute</code>, being assessed at time of writing</p>
+</blockquote>
+<h3><a name="Generated-state-machines-for-1" class="anchor" href="#Generated-state-machines-for-1">Generated state machines for <code>task { .. }</code></a></h3>
+<p><a href="https://github.com/fsharp/fslang-design/blob/main/FSharp-6.0/FS-1087-resumable-code.md">Resumable state machines</a> used for <code>task { .. }</code> also generate struct implementations which resemble closures.</p>
+<p>The debug points recovered for the generated state machine code for <code>seq { ... }</code> is covered up above. The other codegen is as follows:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left"><p>Source</p></th>
+<th align="left"><p>Construct</p></th>
+<th align="left"><p>Debug Points</p></th>
+<th align="left"><p>Attributes</p></th>
+<th align="left"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"><p>task { ... }</p></td>
+<td align="left"><p>State machine struct</p></td>
+<td align="left"></td>
+<td align="left"><p>"Closure"</p></td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left"><p><code>.ctor</code> method</p></td>
+<td align="left"><p>none</p></td>
+<td align="left"><p>none</p></td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"><p>TBD</p></td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+</tbody>
+</table>
+
+<blockquote>
+<p>TODO: we should be generating attributes for some of these
+TODO: we should assess that only the "MoveNext" method gets any debug points at all</p>
+</blockquote>
+<h3><a name="Generated-code-for-delegate-constructions" class="anchor" href="#Generated-code-for-delegate-constructions">Generated code for delegate constructions <code>Func&lt;int,int&gt;(fun x y -&gt; x + y)</code></a></h3>
+<p>A closure class is generated.</p>
+<h3><a name="Generated-code-for-constant-sized-array-and-list-expressions" class="anchor" href="#Generated-code-for-constant-sized-array-and-list-expressions">Generated code for constant-sized array and list expressions</a></h3>
+<p>These are not generally problematic for debug.</p>
+<h3><a name="Generated-code-for-large-constant-arrays" class="anchor" href="#Generated-code-for-large-constant-arrays">Generated code for large constant arrays</a></h3>
+<p>These are not generally problematic for debug.</p>
+<h3><a name="Generated-code-for-pattern-matching" class="anchor" href="#Generated-code-for-pattern-matching">Generated code for pattern matching</a></h3>
+<p>The implementation is a little gnarly and complicated and has historically had glitches.</p>
+<h3><a name="Generated-code-for-conditionals-and-boolean-logic" class="anchor" href="#Generated-code-for-conditionals-and-boolean-logic">Generated code for conditionals and boolean logic</a></h3>
+<p>Generally straight-forward. See for example <a href="https://github.com/dotnet/fsharp/issues/11980">this proposed feature improvement</a></p>
+<h3><a name="Capture-and-closures" class="anchor" href="#Capture-and-closures">Capture and closures</a></h3>
+<p>Captured locals are available via the <code>this</code> pointer of the immediate closure.  Un-captured locals are <strong>not</strong> available as things stand.  See for example <a href="https://github.com/dotnet/fsharp/issues/11262">this proposed feature improvement</a>.</p>
+<p>Consider this code:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span class="id">F</span><span class="pn">(</span><span class="pn">)</span> <span class="o">=</span>
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs11', 44)" onmouseover="showTip(event, 'fs11', 44)" class="id">x</span> <span class="o">=</span> <span class="n">1</span>
+    <span class="k">let</span> <span class="id">y</span> <span class="o">=</span> <span class="n">2</span>
+    <span class="pn">(</span><span class="k">fun</span> <span class="pn">(</span><span class="pn">)</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs11', 45)" onmouseover="showTip(event, 'fs11', 45)" class="id">x</span> <span class="o">+</span> <span class="id">y</span><span class="pn">)</span>
+</code></pre>
+<p>Here <code>x</code> and <code>y</code> become closure fields of the closure class generated for the final lambda. When inspecting locals in the inner closure, the C# expression evaluator we rely on for Visual Studio takes local names like <code>x</code> and <code>y</code> and is happy to look them up via <code>this</code>. This means hovering over <code>x</code> correctly produces the value stored in <code>this.x</code>.</p>
+<p>For nested closures, values are implicitly re-captured, and again the captured locals will be available.</p>
+<p>However this doesn't work with "capture" from a class-defined "let" context. Consider the following variation:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span class="id">C</span><span class="pn">(</span><span class="pn">)</span> <span class="o">=</span>
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs11', 46)" onmouseover="showTip(event, 'fs11', 46)" class="id">x</span> <span class="o">=</span> <span class="n">1</span>
+    <span class="k">member</span> <span class="id">_</span><span class="pn">.</span><span class="id">M</span><span class="pn">(</span><span class="pn">)</span> <span class="o">=</span> 
+        <span class="k">let</span> <span class="id">y</span> <span class="o">=</span> <span class="n">2</span>
+        <span class="pn">(</span><span class="k">fun</span> <span class="pn">(</span><span class="pn">)</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs11', 47)" onmouseover="showTip(event, 'fs11', 47)" class="id">x</span> <span class="o">+</span> <span class="id">y</span><span class="pn">)</span>
+</code></pre>
+<p>Here the implicitly captured local is <code>y</code>, but <code>x</code> is <strong>not</strong> captured, instead it is implicitly rewritten by the F# compiler to <code>c.x</code> where <code>c</code> is the captured outer "this" pointer of the invocation of <code>M()</code>.  This means that hovering over <code>x</code> does not produce a value. See <a href="https://github.com/dotnet/fsharp/issues/3759">issue 3759</a>.</p>
+<h3><a name="Provided-code" class="anchor" href="#Provided-code">Provided code</a></h3>
+<p>Code provided by erasing type providers has all debugging points removed.  It isn't possible to step into such code or if there are implicit debug points they will be the same range as the construct that was macro-expanded by the code erasure.</p>
+<blockquote>
+<p>For example, a <a href="https://github.com/dotnet/fsharp/blob/main/src/fsharp/MethodCalls.fs#L1805">provided if/then/else expression has no debug point</a></p>
+</blockquote>
+<h2><a name="Added-code-generation-for-better-debugging" class="anchor" href="#Added-code-generation-for-better-debugging">Added code generation for better debugging</a></h2>
+<p>We do some "extra" code gen to improve debugging. It is likely much of this could be removed if we had an expression evaluator for F#.</p>
+<h3><a name="this-value" class="anchor" href="#this-value">'this' value</a></h3>
+<p>For <code>member x.Foo() = ...</code> the implementation of the member adds a local variable <code>x</code> containing the <code>this</code> pointer from <code>ldarg.0</code>. THis means hovering over <code>x</code> in the method produces the right value, as does <code>x.Property</code> etc.</p>
+<h3><a name="Pipeline-debugging" class="anchor" href="#Pipeline-debugging">Pipeline debugging</a></h3>
+<p>For pipeline debugging we emit extra locals for each stage of a pipe and debug points at each stage.</p>
+<p>See <a href="https://github.com/dotnet/fsharp/pull/11957">pipeline debugging mini-spec</a>.</p>
+<h3><a name="Shadowed-locals" class="anchor" href="#Shadowed-locals">Shadowed locals</a></h3>
+<p>For shadowed locals we change the name of a local for the scope for which it is shadowed.</p>
+<p>See <a href="https://github.com/dotnet/fsharp/pull/12018">shadowed locals mini-spec</a>.</p>
+<h3><a name="Discriminated-union-debug-display-text" class="anchor" href="#Discriminated-union-debug-display-text">Discriminated union debug display text</a></h3>
+<p>For discriminated union types and all implied subtypes we emit a <code>DebuggerDisplayAttrubte</code> and a private <code>__DebugDisplay()</code> method that uses <code>sprintf "%+0.8A" obj</code> to format the object.</p>
+<h2><a name="Missing-debug-emit" class="anchor" href="#Missing-debug-emit">Missing debug emit</a></h2>
+<h3><a name="Missing-debug-emit-for-PDBs" class="anchor" href="#Missing-debug-emit-for-PDBs">Missing debug emit for PDBs</a></h3>
+<p>Our PDB emit is missing considerable information:</p>
+<ul>
+<li>Not emitted: <a href="https://github.com/dotnet/fsharp/issues/12003">LocalConstants table</a></li>
+<li>Not emitted: <a href="https://github.com/dotnet/fsharp/issues/12002">Compilation options table</a></li>
+<li>Not emitted: <a href="https://github.com/dotnet/fsharp/issues/12001">Dynamic local variables table</a></li>
+<li>Not emitted: <a href="https://github.com/dotnet/fsharp/issues/12000">StateMachineMethod table and StateMachineHoistedLocalScopes table</a></li>
+<li>Not emitted: <a href="https://github.com/dotnet/fsharp/issues/1003">ImportScopes table</a></li>
+</ul>
+<p>These are major holes in the F# experience. Some are required for things like hot-reload.</p>
+<h3><a name="Missing-design-time-services" class="anchor" href="#Missing-design-time-services">Missing design-time services</a></h3>
+<p>Some design-time services are un-implemented by F#:</p>
+<ul>
+<li>Unimplemented: <a href="https://github.com/dotnet/fsharp/issues/2544">F# expression evaluator</a></li>
+<li>Unimplemented: <a href="https://github.com/dotnet/fsharp/issues/4271">Proximity expressions</a> (for Autos window)</li>
+</ul>
+<p>These are major holes in the F# experience and should be implemented.</p>
+<h3><a name="Missing-debug-emit-for-F-Interactive" class="anchor" href="#Missing-debug-emit-for-F-Interactive">Missing debug emit for F# Interactive</a></h3>
+<p>For F# Interactive <a href="https://github.com/dotnet/fsharp/issues/5457">we do not currently emit debug information for script code</a>. This is because of a missing piece of functionality in the Reflection.Emit APIs, and means we have to change our approach to emitting code fragments in F# Interactive to no longer use dynamic assemblies.</p>
+
+            <div class="fsdocs-tip" id="fs1">val f : unit -&gt; &#39;a</div>
+<div class="fsdocs-tip" id="fs2">val x : int</div>
+<div class="fsdocs-tip" id="fs3">val f : (&#39;b -&gt; int)</div>
+<div class="fsdocs-tip" id="fs4">val x : &#39;b</div>
+<div class="fsdocs-tip" id="fs5">val y : int</div>
+<div class="fsdocs-tip" id="fs6">val h1 : x:&#39;a -&gt; &#39;b</div>
+<div class="fsdocs-tip" id="fs7">val x : &#39;a</div>
+<div class="fsdocs-tip" id="fs8">val h2 : x:unit -&gt; &#39;a</div>
+<div class="fsdocs-tip" id="fs9">val x : unit</div>
+<div class="fsdocs-tip" id="fs10">val h3 : x:&#39;a -&gt; &#39;b</div>
+<div class="fsdocs-tip" id="fs11">val x : int list</div>
+<div class="fsdocs-tip" id="fs12">val i : int</div>
+<div class="fsdocs-tip" id="fs13">val f : (unit -&gt; &#39;a)</div>
+<div class="fsdocs-tip" id="fs14">val printfn : format:Printf.TextWriterFormat&lt;&#39;T&gt; -&gt; &#39;T<br /><em>&lt;summary&gt;Print to &lt;c&gt;stdout&lt;/c&gt; using the given format, and add a newline.&lt;/summary&gt;<br />&lt;param name=&quot;format&quot;&gt;The formatter.&lt;/param&gt;<br />&lt;returns&gt;The formatted result.&lt;/returns&gt;</em></div>
+<div class="fsdocs-tip" id="fs15">Multiple items<br />val int : value:&#39;T -&gt; int (requires member op_Explicit)<br /><em>&lt;summary&gt;Converts the argument to signed 32-bit integer. This is a direct conversion for all 
+ primitive numeric types. For strings, the input is converted using &lt;c&gt;Int32.Parse()&lt;/c&gt;  
+ with InvariantCulture settings. Otherwise the operation requires an appropriate
+ static conversion method on the input type.&lt;/summary&gt;<br />&lt;param name=&quot;value&quot;&gt;The input value.&lt;/param&gt;<br />&lt;returns&gt;The converted int&lt;/returns&gt;</em><br /><br />--------------------<br />[&lt;Struct&gt;]
+type int = int32<br /><em>&lt;summary&gt;An abbreviation for the CLI type &lt;see cref=&quot;T:System.Int32&quot; /&gt;.&lt;/summary&gt;<br />&lt;category&gt;Basic Types&lt;/category&gt;</em><br /><br />--------------------<br />type int&lt;&#39;Measure&gt; =
+  int<br /><em>&lt;summary&gt;The type of 32-bit signed integer numbers, annotated with a unit of measure. The unit
+ of measure is erased in compiled code and when values of this type
+ are analyzed using reflection. The type is representationally equivalent to 
+ &lt;see cref=&quot;T:System.Int32&quot; /&gt;.&lt;/summary&gt;<br />&lt;category&gt;Basic Types with Units of Measure&lt;/category&gt;</em></div>
+
+        </div>
+
+        <!-- BEGIN SEARCH BOX: this adds support for the search box -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/JavaScript-autoComplete/1.0.4/auto-complete.css" />
+        <script type="text/javascript">var fsdocs_search_baseurl = 'https://fsharp.github.io/fsharp-compiler-docs/';</script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.8/lunr.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/JavaScript-autoComplete/1.0.4/auto-complete.min.js"></script>
+        <script type="text/javascript" src="https://fsharp.github.io/fsharp-compiler-docs/content/fsdocs-search.js"></script>
+        <!-- END SEARCH BOX: this adds support for the search box -->
+    </div>
+</body>
+
+</html>

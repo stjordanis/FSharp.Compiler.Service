@@ -1,0 +1,1821 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>FSharpParseFileResults (F# Compiler Guide)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="author" content="F# Software Foundation; Microsoft; F# Contributors">
+
+    <link rel="stylesheet" id="theme_link" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.6.0/materia/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
+
+    <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+    <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
+    <link type="text/css" rel="stylesheet" href="https://fsharp.github.io/fsharp-compiler-docs/content/navbar-fixed-left.css" />
+    <link type="text/css" rel="stylesheet" href="https://fsharp.github.io/fsharp-compiler-docs/content/fsdocs-default.css" />
+    <link type="text/css" rel="stylesheet" href="https://fsharp.github.io/fsharp-compiler-docs/content/fsdocs-custom.css" />
+    <script type="text/javascript" src="https://fsharp.github.io/fsharp-compiler-docs/content/fsdocs-tips.js"></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!-- BEGIN SEARCH BOX: this adds support for the search box -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/JavaScript-autoComplete/1.0.4/auto-complete.css" />
+    <!-- END SEARCH BOX: this adds support for the search box -->
+    
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-md navbar-light bg-secondary fixed-left" id="fsdocs-nav">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse navbar-nav-scroll" id="navbarsExampleDefault">
+            <a href="https://fsharp.github.io/fsharp-compiler-docs/"><img id="fsdocs-logo" src="https://fsharp.github.io/fsharp-compiler-docs/img/logo.png" /></a>
+            <!-- BEGIN SEARCH BOX: this adds support for the search box -->
+            <div id="header">
+                <div class="searchbox" id="fsdocs-searchbox">
+                    <label for="search-by">
+                        <i class="fas fa-search"></i>
+                    </label>
+                    <input data-search-input="" id="search-by" type="search" placeholder="Search..." />
+                    <span data-search-clear="">
+                        <i class="fas fa-times"></i>
+                    </span>
+                </div>
+            </div>
+
+            <!-- END SEARCH BOX: this adds support for the search box -->
+            <ul class="navbar-nav">
+                <li class="nav-header">Links</li>
+                <li class="nav-item" id="fsdocs-license-link"><a class="nav-link" href="https://github.com/dotnet/fsharp/blob/main/License.txt">License</a></li>
+                <li class="nav-item" id="fsdocs-release-notes-link"><a class="nav-link" href="https://github.com/dotnet/fsharp/blob/main/release-notes.md">Release Notes</a></li>
+                <li class="nav-item" id="fsdocs-repository-link"><a class="nav-link" href="https://github.com/dotnet/fsharp/">Source Repository</a></li>
+                <li class="nav-header">
+  Compiler Internals
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/overview.html">
+    Overview
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/coding-standards.html">
+    Coding standards
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/diagnostics.html">
+    Diagnostics
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/debug-emit.html">
+    Debug emit
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/optimizations.html">
+    Optimizations
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/large-inputs-and-stack-overflows.html">
+    Large inputs
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/memory-usage.html">
+    Memory usage
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/compiler-startup-performance.html">
+    Startup Performance
+  </a>
+</li>             
+<li class="nav-header">
+  Language Service Internals
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/tooling-features.html">
+    Overview
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/project-builds.html">
+    Project builds
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/caches.html">
+    FSharpChecker caches
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/react.html">
+    Incrementality
+  </a>
+</li>             
+<li class="nav-header">
+  FSharp.Compiler.Service
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/tokenizer.html">
+    Tutorial: Tokenizing
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/untypedtree.html">
+    Tutorial: Expressions
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/symbols.html">
+    Tutorial: Symbols
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/editor.html">
+    Tutorial: Editor services
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/typedtree.html">
+    Tutorial: Expressions
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/project.html">
+    Tutorial: Project analysis
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/interactive.html">
+    Tutorial: Hosted execution
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/compiler.html">
+    Tutorial: Hosting the compiler
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/corelib.html">
+    Notes on FSharp.Core
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/filesystem.html">
+    IFileSystem
+  </a>
+</li>             
+<li class="nav-header">
+  FSharp.Core
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fsharp-core-notes.html">
+    Guidance
+  </a>
+</li>
+                <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="masthead">
+            <h3 class="muted"><a href="https://fsharp.github.io/fsharp-compiler-docs/">F# Compiler Guide</a></h3>
+        </div>
+        <hr />
+        <div class="container" id="fsdocs-content">
+            <div>
+  <h2>
+    FSharpParseFileResults Type
+  </h2>
+  <dl class="fsdocs-metadata">
+    <dt>
+      Namespace: 
+      <a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-codeanalysis.html">
+        FSharp.Compiler.CodeAnalysis
+      </a>
+    </dt>
+    <dt>
+      Assembly: FSharp.Compiler.Service.dll
+    </dt>
+    <dt>
+      Base Type: 
+      <code>obj</code>
+    </dt>
+  </dl>
+  <div class="fsdocs-xmldoc">
+    <div>
+      <p class="fsdocs-summary">
+        
+ Represents the results of parsing an F# file and a set of analysis operations based on the parse tree alone.
+
+      </p>
+    </div>
+  </div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div>
+    <h3>
+      Instance members
+    </h3>
+    <table class="table outer-list fsdocs-member-list">
+      <thead>
+        <tr>
+          <td class="fsdocs-member-list-header">
+            Instance member
+          </td>
+          <td class="fsdocs-member-list-header">
+            Description
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '810', 810)" onmouseover="showTip(event, '810', 810)">
+                <p>
+                  <a id="DependencyFiles">
+                    <a href="#DependencyFiles">
+                      <code><span>this.DependencyFiles</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="810">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.DependencyFiles</span></code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span>string[]</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:P:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.DependencyFiles`')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md-hover.png" class="hover"/>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'P:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.DependencyFiles\'/>')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml-hover.png" class="hover"/>
+              </div>
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/FSharpParseFileResults.fs#L786-786" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+ When these files change then the build is invalid
+
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code><span>string[]</span></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '811', 811)" onmouseover="showTip(event, '811', 811)">
+                <p>
+                  <a id="Diagnostics">
+                    <a href="#Diagnostics">
+                      <code><span>this.Diagnostics</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="811">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.Diagnostics</span></code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-diagnostics-fsharpdiagnostic.html">FSharpDiagnostic</a>[]</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:P:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.Diagnostics`')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md-hover.png" class="hover"/>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'P:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.Diagnostics\'/>')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml-hover.png" class="hover"/>
+              </div>
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/FSharpParseFileResults.fs#L79-79" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+ Get the errors and warnings for the parse
+
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code><span><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-diagnostics-fsharpdiagnostic.html">FSharpDiagnostic</a>[]</span></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '812', 812)" onmouseover="showTip(event, '812', 812)">
+                <p>
+                  <a id="FileName">
+                    <a href="#FileName">
+                      <code><span>this.FileName</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="812">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.FileName</span></code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code>string</code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:P:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.FileName`')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md-hover.png" class="hover"/>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'P:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.FileName\'/>')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml-hover.png" class="hover"/>
+              </div>
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/FSharpParseFileResults.fs#L788-788" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+ Name of the file for which this information were created
+
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code>string</code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '813', 813)" onmouseover="showTip(event, '813', 813)">
+                <p>
+                  <a id="FindParameterLocations">
+                    <a href="#FindParameterLocations">
+                      <code><span>this.FindParameterLocations</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="813">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.FindParameterLocations</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        pos
+                      </b>
+                      :
+                      <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-pos.html">pos</a></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-parameterlocations.html">ParameterLocations</a>&#32;option</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:M:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.FindParameterLocations`')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md-hover.png" class="hover"/>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.FindParameterLocations\'/>')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml-hover.png" class="hover"/>
+              </div>
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/FSharpParseFileResults.fs#L348-348" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+ Notable parse info for ParameterInfo at a given location
+
+              </p>
+            </div>
+            <dl class="fsdocs-params">
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  pos
+                </span>
+                :
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-pos.html">pos</a></code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+            </dl>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code><span><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-parameterlocations.html">ParameterLocations</a>&#32;option</span></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '814', 814)" onmouseover="showTip(event, '814', 814)">
+                <p>
+                  <a id="GetAllArgumentsForFunctionApplicationAtPostion">
+                    <a href="#GetAllArgumentsForFunctionApplicationAtPostion">
+                      <code><span>this.GetAllArgumentsForFunctionApplicationAtPostion</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="814">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.GetAllArgumentsForFunctionApplicationAtPostion</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        pos
+                      </b>
+                      :
+                      <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-pos.html">pos</a></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><span><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-range-0.html">range</a>&#32;list</span>&#32;option</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:M:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.GetAllArgumentsForFunctionApplicationAtPostion`')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md-hover.png" class="hover"/>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.GetAllArgumentsForFunctionApplicationAtPostion\'/>')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml-hover.png" class="hover"/>
+              </div>
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/FSharpParseFileResults.fs#L284-284" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+ Gets the ranges of all arguments, if they can be found, for a function application at the given position.
+
+              </p>
+            </div>
+            <dl class="fsdocs-params">
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  pos
+                </span>
+                :
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-pos.html">pos</a></code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+            </dl>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code><span><span><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-range-0.html">range</a>&#32;list</span>&#32;option</span></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '815', 815)" onmouseover="showTip(event, '815', 815)">
+                <p>
+                  <a id="GetNavigationItems">
+                    <a href="#GetNavigationItems">
+                      <code><span>this.GetNavigationItems</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="815">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.GetNavigationItems</span></code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-navigationitems.html">NavigationItems</a></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:M:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.GetNavigationItems`')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md-hover.png" class="hover"/>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.GetNavigationItems\'/>')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml-hover.png" class="hover"/>
+              </div>
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/FSharpParseFileResults.fs#L791-791" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+ Get declared items and the selected item at the specified location
+
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-navigationitems.html">NavigationItems</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '816', 816)" onmouseover="showTip(event, '816', 816)">
+                <p>
+                  <a id="IsBindingALambdaAtPosition">
+                    <a href="#IsBindingALambdaAtPosition">
+                      <code><span>this.IsBindingALambdaAtPosition</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="816">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.IsBindingALambdaAtPosition</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        arg0
+                      </b>
+                      :
+                      <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-pos.html">pos</a></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code>bool</code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:M:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.IsBindingALambdaAtPosition`')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md-hover.png" class="hover"/>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.IsBindingALambdaAtPosition\'/>')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml-hover.png" class="hover"/>
+              </div>
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/FSharpParseFileResults.fs#L403-403" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+ Determines if the binding at the given position is bound to a lambda expression
+
+              </p>
+            </div>
+            <dl class="fsdocs-params">
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  arg0
+                </span>
+                :
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-pos.html">pos</a></code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+            </dl>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code>bool</code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '817', 817)" onmouseover="showTip(event, '817', 817)">
+                <p>
+                  <a id="IsPosContainedInApplication">
+                    <a href="#IsPosContainedInApplication">
+                      <code><span>this.IsPosContainedInApplication</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="817">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.IsPosContainedInApplication</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        pos
+                      </b>
+                      :
+                      <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-pos.html">pos</a></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code>bool</code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:M:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.IsPosContainedInApplication`')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md-hover.png" class="hover"/>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.IsPosContainedInApplication\'/>')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml-hover.png" class="hover"/>
+              </div>
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/FSharpParseFileResults.fs#L156-156" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+ Determines if the given position is inside a function or method application.
+
+              </p>
+            </div>
+            <dl class="fsdocs-params">
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  pos
+                </span>
+                :
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-pos.html">pos</a></code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+            </dl>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code>bool</code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '818', 818)" onmouseover="showTip(event, '818', 818)">
+                <p>
+                  <a id="IsPositionContainedInACurriedParameter">
+                    <a href="#IsPositionContainedInACurriedParameter">
+                      <code><span>this.IsPositionContainedInACurriedParameter</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="818">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.IsPositionContainedInACurriedParameter</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        pos
+                      </b>
+                      :
+                      <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-pos.html">pos</a></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code>bool</code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:M:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.IsPositionContainedInACurriedParameter`')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md-hover.png" class="hover"/>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.IsPositionContainedInACurriedParameter\'/>')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml-hover.png" class="hover"/>
+              </div>
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/FSharpParseFileResults.fs#L351-351" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+ Determines if the given position is contained within a curried parameter in a binding.
+
+              </p>
+            </div>
+            <dl class="fsdocs-params">
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  pos
+                </span>
+                :
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-pos.html">pos</a></code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+            </dl>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code>bool</code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '819', 819)" onmouseover="showTip(event, '819', 819)">
+                <p>
+                  <a id="IsTypeAnnotationGivenAtPosition">
+                    <a href="#IsTypeAnnotationGivenAtPosition">
+                      <code><span>this.IsTypeAnnotationGivenAtPosition</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="819">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.IsTypeAnnotationGivenAtPosition</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        arg0
+                      </b>
+                      :
+                      <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-pos.html">pos</a></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code>bool</code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:M:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.IsTypeAnnotationGivenAtPosition`')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md-hover.png" class="hover"/>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.IsTypeAnnotationGivenAtPosition\'/>')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml-hover.png" class="hover"/>
+              </div>
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/FSharpParseFileResults.fs#L374-374" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+ Determines if the expression or pattern at the given position has a type annotation
+
+              </p>
+            </div>
+            <dl class="fsdocs-params">
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  arg0
+                </span>
+                :
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-pos.html">pos</a></code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+            </dl>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code>bool</code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '820', 820)" onmouseover="showTip(event, '820', 820)">
+                <p>
+                  <a id="ParseHadErrors">
+                    <a href="#ParseHadErrors">
+                      <code><span>this.ParseHadErrors</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="820">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.ParseHadErrors</span></code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code>bool</code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:P:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.ParseHadErrors`')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md-hover.png" class="hover"/>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'P:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.ParseHadErrors\'/>')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml-hover.png" class="hover"/>
+              </div>
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/FSharpParseFileResults.fs#L81-81" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+ Indicates if any errors occurred during the parse
+
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code>bool</code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '821', 821)" onmouseover="showTip(event, '821', 821)">
+                <p>
+                  <a id="ParseTree">
+                    <a href="#ParseTree">
+                      <code><span>this.ParseTree</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="821">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.ParseTree</span></code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-syntax-parsedinput.html">ParsedInput</a></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:P:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.ParseTree`')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md-hover.png" class="hover"/>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'P:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.ParseTree\'/>')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml-hover.png" class="hover"/>
+              </div>
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/FSharpParseFileResults.fs#L83-83" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+ The syntax tree resulting from the parse
+
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-syntax-parsedinput.html">ParsedInput</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '822', 822)" onmouseover="showTip(event, '822', 822)">
+                <p>
+                  <a id="TryIdentOfPipelineContainingPosAndNumArgsApplied">
+                    <a href="#TryIdentOfPipelineContainingPosAndNumArgsApplied">
+                      <code><span>this.TryIdentOfPipelineContainingPosAndNumArgsApplied</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="822">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.TryIdentOfPipelineContainingPosAndNumArgsApplied</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        pos
+                      </b>
+                      :
+                      <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-pos.html">pos</a></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><span>(<span><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-syntax-ident.html">Ident</a>&#32;*&#32;int</span>)</span>&#32;option</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:M:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.TryIdentOfPipelineContainingPosAndNumArgsApplied`')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md-hover.png" class="hover"/>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.TryIdentOfPipelineContainingPosAndNumArgsApplied\'/>')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml-hover.png" class="hover"/>
+              </div>
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/FSharpParseFileResults.fs#L136-136" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+ Attempts to find an Ident of a pipeline containing the given position, and the number of args already applied in that pipeline.
+ For example, '[1..10] |> List.map ' would give back the ident of '|>' and 1, because it applied 1 arg (the list) to 'List.map'.
+
+              </p>
+            </div>
+            <dl class="fsdocs-params">
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  pos
+                </span>
+                :
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-pos.html">pos</a></code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+            </dl>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code><span><span>(<span><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-syntax-ident.html">Ident</a>&#32;*&#32;int</span>)</span>&#32;option</span></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '823', 823)" onmouseover="showTip(event, '823', 823)">
+                <p>
+                  <a id="TryRangeOfExprInYieldOrReturn">
+                    <a href="#TryRangeOfExprInYieldOrReturn">
+                      <code><span>this.TryRangeOfExprInYieldOrReturn</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="823">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.TryRangeOfExprInYieldOrReturn</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        pos
+                      </b>
+                      :
+                      <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-pos.html">pos</a></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-range-0.html">range</a>&#32;option</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:M:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.TryRangeOfExprInYieldOrReturn`')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md-hover.png" class="hover"/>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.TryRangeOfExprInYieldOrReturn\'/>')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml-hover.png" class="hover"/>
+              </div>
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/FSharpParseFileResults.fs#L309-309" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+ Attempts to find the range of an expression `expr` contained in a `yield expr`  or `return expr` expression (and bang-variants).
+
+              </p>
+            </div>
+            <dl class="fsdocs-params">
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  pos
+                </span>
+                :
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-pos.html">pos</a></code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+            </dl>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code><span><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-range-0.html">range</a>&#32;option</span></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '824', 824)" onmouseover="showTip(event, '824', 824)">
+                <p>
+                  <a id="TryRangeOfExpressionBeingDereferencedContainingPos">
+                    <a href="#TryRangeOfExpressionBeingDereferencedContainingPos">
+                      <code><span>this.TryRangeOfExpressionBeingDereferencedContainingPos</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="824">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.TryRangeOfExpressionBeingDereferencedContainingPos</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        expressionPos
+                      </b>
+                      :
+                      <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-pos.html">pos</a></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-range-0.html">range</a>&#32;option</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:M:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.TryRangeOfExpressionBeingDereferencedContainingPos`')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md-hover.png" class="hover"/>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.TryRangeOfExpressionBeingDereferencedContainingPos\'/>')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml-hover.png" class="hover"/>
+              </div>
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/FSharpParseFileResults.fs#L337-337" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+ Gets the range of an expression being dereferenced. For `!expr`, gives the range of `expr`
+
+              </p>
+            </div>
+            <dl class="fsdocs-params">
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  expressionPos
+                </span>
+                :
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-pos.html">pos</a></code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+            </dl>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code><span><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-range-0.html">range</a>&#32;option</span></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '825', 825)" onmouseover="showTip(event, '825', 825)">
+                <p>
+                  <a id="TryRangeOfFunctionOrMethodBeingApplied">
+                    <a href="#TryRangeOfFunctionOrMethodBeingApplied">
+                      <code><span>this.TryRangeOfFunctionOrMethodBeingApplied</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="825">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.TryRangeOfFunctionOrMethodBeingApplied</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        pos
+                      </b>
+                      :
+                      <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-pos.html">pos</a></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-range-0.html">range</a>&#32;option</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:M:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.TryRangeOfFunctionOrMethodBeingApplied`')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md-hover.png" class="hover"/>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.TryRangeOfFunctionOrMethodBeingApplied\'/>')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml-hover.png" class="hover"/>
+              </div>
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/FSharpParseFileResults.fs#L171-171" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+ Attempts to find the range of a function or method that is being applied. Also accounts for functions in pipelines.
+
+              </p>
+            </div>
+            <dl class="fsdocs-params">
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  pos
+                </span>
+                :
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-pos.html">pos</a></code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+            </dl>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code><span><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-range-0.html">range</a>&#32;option</span></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '826', 826)" onmouseover="showTip(event, '826', 826)">
+                <p>
+                  <a id="TryRangeOfNameOfNearestOuterBindingContainingPos">
+                    <a href="#TryRangeOfNameOfNearestOuterBindingContainingPos">
+                      <code><span>this.TryRangeOfNameOfNearestOuterBindingContainingPos</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="826">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.TryRangeOfNameOfNearestOuterBindingContainingPos</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        pos
+                      </b>
+                      :
+                      <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-pos.html">pos</a></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-range-0.html">range</a>&#32;option</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:M:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.TryRangeOfNameOfNearestOuterBindingContainingPos`')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md-hover.png" class="hover"/>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.TryRangeOfNameOfNearestOuterBindingContainingPos\'/>')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml-hover.png" class="hover"/>
+              </div>
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/FSharpParseFileResults.fs#L85-85" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+ Attempts to find the range of the name of the nearest outer binding that contains a given position.
+
+              </p>
+            </div>
+            <dl class="fsdocs-params">
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  pos
+                </span>
+                :
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-pos.html">pos</a></code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+            </dl>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code><span><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-range-0.html">range</a>&#32;option</span></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '827', 827)" onmouseover="showTip(event, '827', 827)">
+                <p>
+                  <a id="TryRangeOfParenEnclosingOpEqualsGreaterUsage">
+                    <a href="#TryRangeOfParenEnclosingOpEqualsGreaterUsage">
+                      <code><span>this.TryRangeOfParenEnclosingOpEqualsGreaterUsage</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="827">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.TryRangeOfParenEnclosingOpEqualsGreaterUsage</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        opGreaterEqualPos
+                      </b>
+                      :
+                      <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-pos.html">pos</a></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><span>(<span><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-range-0.html">range</a>&#32;*&#32;<a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-range-0.html">range</a>&#32;*&#32;<a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-range-0.html">range</a></span>)</span>&#32;option</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:M:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.TryRangeOfParenEnclosingOpEqualsGreaterUsage`')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md-hover.png" class="hover"/>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.TryRangeOfParenEnclosingOpEqualsGreaterUsage\'/>')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml-hover.png" class="hover"/>
+              </div>
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/FSharpParseFileResults.fs#L287-287" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+ Attempts to find the range of an attempted lambda expression or pattern, the argument range, and the expr range when writing a C#-style "lambda" (which is actually an operator application)
+
+              </p>
+            </div>
+            <dl class="fsdocs-params">
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  opGreaterEqualPos
+                </span>
+                :
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-pos.html">pos</a></code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+            </dl>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code><span><span>(<span><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-range-0.html">range</a>&#32;*&#32;<a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-range-0.html">range</a>&#32;*&#32;<a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-range-0.html">range</a></span>)</span>&#32;option</span></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '828', 828)" onmouseover="showTip(event, '828', 828)">
+                <p>
+                  <a id="TryRangeOfRecordExpressionContainingPos">
+                    <a href="#TryRangeOfRecordExpressionContainingPos">
+                      <code><span>this.TryRangeOfRecordExpressionContainingPos</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="828">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.TryRangeOfRecordExpressionContainingPos</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        pos
+                      </b>
+                      :
+                      <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-pos.html">pos</a></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-range-0.html">range</a>&#32;option</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:M:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.TryRangeOfRecordExpressionContainingPos`')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md-hover.png" class="hover"/>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.TryRangeOfRecordExpressionContainingPos\'/>')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml-hover.png" class="hover"/>
+              </div>
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/FSharpParseFileResults.fs#L318-318" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+ Attempts to find the range of a record expression containing the given position.
+
+              </p>
+            </div>
+            <dl class="fsdocs-params">
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  pos
+                </span>
+                :
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-pos.html">pos</a></code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+            </dl>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code><span><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-range-0.html">range</a>&#32;option</span></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '829', 829)" onmouseover="showTip(event, '829', 829)">
+                <p>
+                  <a id="TryRangeOfRefCellDereferenceContainingPos">
+                    <a href="#TryRangeOfRefCellDereferenceContainingPos">
+                      <code><span>this.TryRangeOfRefCellDereferenceContainingPos</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="829">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.TryRangeOfRefCellDereferenceContainingPos</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        expressionPos
+                      </b>
+                      :
+                      <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-pos.html">pos</a></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-range-0.html">range</a>&#32;option</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:M:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.TryRangeOfRefCellDereferenceContainingPos`')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md-hover.png" class="hover"/>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.TryRangeOfRefCellDereferenceContainingPos\'/>')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml-hover.png" class="hover"/>
+              </div>
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/FSharpParseFileResults.fs#L326-326" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+ Given the position of an expression, attempts to find the range of the
+ '!' in a derefence operation of that expression, like:
+ '!expr', '!(expr)', etc.
+ 
+              </p>
+            </div>
+            <dl class="fsdocs-params">
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  expressionPos
+                </span>
+                :
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-pos.html">pos</a></code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+            </dl>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code><span><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-range-0.html">range</a>&#32;option</span></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '830', 830)" onmouseover="showTip(event, '830', 830)">
+                <p>
+                  <a id="ValidateBreakpointLocation">
+                    <a href="#ValidateBreakpointLocation">
+                      <code><span>this.ValidateBreakpointLocation</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="830">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.ValidateBreakpointLocation</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        pos
+                      </b>
+                      :
+                      <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-pos.html">pos</a></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-range-0.html">range</a>&#32;option</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:M:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.ValidateBreakpointLocation`')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-md-hover.png" class="hover"/>
+              </div>
+              <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Compiler.CodeAnalysis.FSharpParseFileResults.ValidateBreakpointLocation\'/>')">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/copy-xml-hover.png" class="hover"/>
+              </div>
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/FSharpParseFileResults.fs#L795-795" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+ Return the inner-most range associated with a possible breakpoint location
+
+              </p>
+            </div>
+            <dl class="fsdocs-params">
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  pos
+                </span>
+                :
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-pos.html">pos</a></code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+            </dl>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code><span><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-text-range-0.html">range</a>&#32;option</span></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div></div>
+</div>
+            
+        </div>
+
+        <!-- BEGIN SEARCH BOX: this adds support for the search box -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/JavaScript-autoComplete/1.0.4/auto-complete.css" />
+        <script type="text/javascript">var fsdocs_search_baseurl = 'https://fsharp.github.io/fsharp-compiler-docs/';</script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.8/lunr.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/JavaScript-autoComplete/1.0.4/auto-complete.min.js"></script>
+        <script type="text/javascript" src="https://fsharp.github.io/fsharp-compiler-docs/content/fsdocs-search.js"></script>
+        <!-- END SEARCH BOX: this adds support for the search box -->
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Memory usage</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="author" content="F# Software Foundation; Microsoft; F# Contributors">
+
+    <link rel="stylesheet" id="theme_link" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.6.0/materia/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
+
+    <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+    <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
+    <link type="text/css" rel="stylesheet" href="https://fsharp.github.io/fsharp-compiler-docs/content/navbar-fixed-left.css" />
+    <link type="text/css" rel="stylesheet" href="https://fsharp.github.io/fsharp-compiler-docs/content/fsdocs-default.css" />
+    <link type="text/css" rel="stylesheet" href="https://fsharp.github.io/fsharp-compiler-docs/content/fsdocs-custom.css" />
+    <script type="text/javascript" src="https://fsharp.github.io/fsharp-compiler-docs/content/fsdocs-tips.js"></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!-- BEGIN SEARCH BOX: this adds support for the search box -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/JavaScript-autoComplete/1.0.4/auto-complete.css" />
+    <!-- END SEARCH BOX: this adds support for the search box -->
+    
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-md navbar-light bg-secondary fixed-left" id="fsdocs-nav">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse navbar-nav-scroll" id="navbarsExampleDefault">
+            <a href="https://fsharp.github.io/fsharp-compiler-docs/"><img id="fsdocs-logo" src="https://fsharp.github.io/fsharp-compiler-docs/img/logo.png" /></a>
+            <!-- BEGIN SEARCH BOX: this adds support for the search box -->
+            <div id="header">
+                <div class="searchbox" id="fsdocs-searchbox">
+                    <label for="search-by">
+                        <i class="fas fa-search"></i>
+                    </label>
+                    <input data-search-input="" id="search-by" type="search" placeholder="Search..." />
+                    <span data-search-clear="">
+                        <i class="fas fa-times"></i>
+                    </span>
+                </div>
+            </div>
+
+            <!-- END SEARCH BOX: this adds support for the search box -->
+            <ul class="navbar-nav">
+                <li class="nav-header">Links</li>
+                <li class="nav-item" id="fsdocs-license-link"><a class="nav-link" href="https://github.com/dotnet/fsharp/blob/main/License.txt">License</a></li>
+                <li class="nav-item" id="fsdocs-release-notes-link"><a class="nav-link" href="https://github.com/dotnet/fsharp/blob/main/release-notes.md">Release Notes</a></li>
+                <li class="nav-item" id="fsdocs-repository-link"><a class="nav-link" href="https://github.com/dotnet/fsharp/">Source Repository</a></li>
+                <li class="nav-header">
+  Compiler Internals
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/overview.html">
+    Overview
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/coding-standards.html">
+    Coding standards
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/diagnostics.html">
+    Diagnostics
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/debug-emit.html">
+    Debug emit
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/optimizations.html">
+    Optimizations
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/large-inputs-and-stack-overflows.html">
+    Large inputs
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/memory-usage.html">
+    Memory usage
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/compiler-startup-performance.html">
+    Startup Performance
+  </a>
+</li>             
+<li class="nav-header">
+  Language Service Internals
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/tooling-features.html">
+    Overview
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/project-builds.html">
+    Project builds
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/caches.html">
+    FSharpChecker caches
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/react.html">
+    Incrementality
+  </a>
+</li>             
+<li class="nav-header">
+  FSharp.Compiler.Service
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/tokenizer.html">
+    Tutorial: Tokenizing
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/untypedtree.html">
+    Tutorial: Expressions
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/symbols.html">
+    Tutorial: Symbols
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/editor.html">
+    Tutorial: Editor services
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/typedtree.html">
+    Tutorial: Expressions
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/project.html">
+    Tutorial: Project analysis
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/interactive.html">
+    Tutorial: Hosted execution
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/compiler.html">
+    Tutorial: Hosting the compiler
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/corelib.html">
+    Notes on FSharp.Core
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/filesystem.html">
+    IFileSystem
+  </a>
+</li>             
+<li class="nav-header">
+  FSharp.Core
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fsharp-core-notes.html">
+    Guidance
+  </a>
+</li>
+                <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="masthead">
+            <h3 class="muted"><a href="https://fsharp.github.io/fsharp-compiler-docs/">F# Compiler Guide</a></h3>
+        </div>
+        <hr />
+        <div class="container" id="fsdocs-content">
+            
+<h1><a name="Compiler-Memory-Usage" class="anchor" href="#Compiler-Memory-Usage">Compiler Memory Usage</a></h1>
+<p>Overall memory usage is a primary determinant of the usability of the F# compiler and instances of the F# compiler service.</p>
+<h2><a name="Why-memory-usage-matters" class="anchor" href="#Why-memory-usage-matters">Why memory usage matters</a></h2>
+<p>Overly high memory usage results in poor throughput (particularly due to increased GC times) and low user interface responsivity in tools such as Visual Studio or other editing environments. In some extreme cases, it can lead to Visual Studio crashing or another IDE becoming unusable due to constant paging from absurdly high memory usage. Luckily, these extreme cases are very rare.</p>
+<p>When you do a single compilation to produce a binary, memory usage typically doesn't matter much. It's often fine to allocate a lot of memory because it will just be reclaimed after compilation is over.</p>
+<p>However, the F# compiler is not simply a batch process that accepts source code as input and produces an assembly as output. When you consider the needs of editor and project tooling in IDEs, the F# compiler is:</p>
+<ul>
+<li>A database of syntactic and semantic data about the code hosted in an IDE</li>
+<li>An API for tools to request tooling-specific data (e.g. F# tooltip information)</li>
+<li>In FsAutoComplete or other LSP implementations, it's a server process that accepts requests for syntactic and semantic information</li>
+</ul>
+<p>Thinking about the F# compiler in these ways makes performance far more complicated than just throughput of a batch compilation process.</p>
+<h2><a name="Analyzing-compiler-memory-usage" class="anchor" href="#Analyzing-compiler-memory-usage">Analyzing compiler memory usage</a></h2>
+<p>In general, the F# compiler allocates a lot of memory. More than it needs to. However, most of the "easy" sources of allocations have been squashed out and what remains are many smaller sources of allocations. The remaining "big" pieces allocate as a result of their current architecture, so it isn't straightforward to address them.</p>
+<p>Some allocations are much more than others
+<em> Large Object Heap (LOH) allocations (&gt; ~80K) are rarely collected and should only be used for long-lived items.
+</em> Ephemeral allocations that never escape the Gen0 seem to not matter that much, though of course should be considered.
+* Don't try to remove all allocations, and don't asseume copy large structs is better than allocating a reference type. Measure instead.</p>
+<p>To analyze memory usage of F# tooling, you have two primary avenues:</p>
+<ol>
+<li>Take a process dump on your machine and analyze it</li>
+<li>Use sampling to collect a trace of your system while you perform various tasks in an IDE, ideally for 60 seconds or more.</li>
+</ol>
+<p>You can analyze dumps and take samples with <a href="https://www.jetbrains.com/dotmemory/">dotMemory</a> or <a href="https://github.com/Microsoft/perfview">PerfView</a>.</p>
+<h3><a name="Analyzing-a-process-dump-file" class="anchor" href="#Analyzing-a-process-dump-file">Analyzing a process dump file</a></h3>
+<p>Process dump files are extremely information-rich data files that can be used to see the distribution of memory usage across various types. Tools like <a href="https://www.jetbrains.com/dotmemory/">dotMemory</a> will show these distributions and intelligently group things to help identify the biggest areas worth improving. Additionally, they will notice things like duplicate strings and sparse arrays, which are often great ways to improve memory usage since it means more memory is being used than is necessary.</p>
+<h3><a name="Analyzing-a-sample-trace-of-IDE-usage" class="anchor" href="#Analyzing-a-sample-trace-of-IDE-usage">Analyzing a sample trace of IDE usage</a></h3>
+<p>The other important tool to understand memory and CPU usage for a given sample of IDE usage is a trace file. These are collected and analyzed by tools like <a href="https://github.com/Microsoft/perfview">PerfView</a> and <a href="https://www.jetbrains.com/profiler/">dotTrace</a>.</p>
+<p>When analyzing a trace, there are a few things to look out for:</p>
+<ol>
+<li>
+Overall GC statistics for the sample to give an overall picture of what was going on in the IDE for your sample:
+a. How much CPU time was spent in the GC as a percentage of total CPU time for the IDE process?
+b. What was the peak working set (total memory usage)?
+c. What was the peak allocations per second?
+d. How many allocations were Gen0? Gen1? Gen2?
+</li>
+<li>
+Memory allocations for the sample, typically also ignoring object deaths:
+a. Is <code>LargeObject</code> showing up anywhere prominently? If so, that's a problem!
+b. Which objects show up highest on the list? Does their presence that high make sense?
+c. For a type such as <code>System.String</code>, which caller allocates it the most? Can that be improved?
+</li>
+<li>
+CPU sampling data, sorted by most CPU time
+a. Are any methods showing up that correspond with high memory allocations? Something showing up prominently in both places is often a sign that it needs work!
+</li>
+</ol>
+<p>After analyzing a trace, you should have a good idea of places that could see improvement. Often times a tuple can be made into a struct tuple, or some convenient string processing could be adjusted to use a <code>ReadonlySpan&lt;'T&gt;</code> or turned into a more verbose loop that avoids allocations.</p>
+
+            
+        </div>
+
+        <!-- BEGIN SEARCH BOX: this adds support for the search box -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/JavaScript-autoComplete/1.0.4/auto-complete.css" />
+        <script type="text/javascript">var fsdocs_search_baseurl = 'https://fsharp.github.io/fsharp-compiler-docs/';</script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.8/lunr.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/JavaScript-autoComplete/1.0.4/auto-complete.min.js"></script>
+        <script type="text/javascript" src="https://fsharp.github.io/fsharp-compiler-docs/content/fsdocs-search.js"></script>
+        <!-- END SEARCH BOX: this adds support for the search box -->
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,2171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>SemanticClassificationType (F# Compiler Guide)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="author" content="F# Software Foundation; Microsoft; F# Contributors">
+
+    <link rel="stylesheet" id="theme_link" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.6.0/materia/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
+
+    <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+    <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
+    <link type="text/css" rel="stylesheet" href="https://fsharp.github.io/fsharp-compiler-docs/content/navbar-fixed-left.css" />
+    <link type="text/css" rel="stylesheet" href="https://fsharp.github.io/fsharp-compiler-docs/content/fsdocs-default.css" />
+    <link type="text/css" rel="stylesheet" href="https://fsharp.github.io/fsharp-compiler-docs/content/fsdocs-custom.css" />
+    <script type="text/javascript" src="https://fsharp.github.io/fsharp-compiler-docs/content/fsdocs-tips.js"></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!-- BEGIN SEARCH BOX: this adds support for the search box -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/JavaScript-autoComplete/1.0.4/auto-complete.css" />
+    <!-- END SEARCH BOX: this adds support for the search box -->
+    
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-md navbar-light bg-secondary fixed-left" id="fsdocs-nav">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse navbar-nav-scroll" id="navbarsExampleDefault">
+            <a href="https://fsharp.github.io/fsharp-compiler-docs/"><img id="fsdocs-logo" src="https://fsharp.github.io/fsharp-compiler-docs/img/logo.png" /></a>
+            <!-- BEGIN SEARCH BOX: this adds support for the search box -->
+            <div id="header">
+                <div class="searchbox" id="fsdocs-searchbox">
+                    <label for="search-by">
+                        <i class="fas fa-search"></i>
+                    </label>
+                    <input data-search-input="" id="search-by" type="search" placeholder="Search..." />
+                    <span data-search-clear="">
+                        <i class="fas fa-times"></i>
+                    </span>
+                </div>
+            </div>
+
+            <!-- END SEARCH BOX: this adds support for the search box -->
+            <ul class="navbar-nav">
+                <li class="nav-header">Links</li>
+                <li class="nav-item" id="fsdocs-license-link"><a class="nav-link" href="https://github.com/dotnet/fsharp/blob/main/License.txt">License</a></li>
+                <li class="nav-item" id="fsdocs-release-notes-link"><a class="nav-link" href="https://github.com/dotnet/fsharp/blob/main/release-notes.md">Release Notes</a></li>
+                <li class="nav-item" id="fsdocs-repository-link"><a class="nav-link" href="https://github.com/dotnet/fsharp/">Source Repository</a></li>
+                <li class="nav-header">
+  Compiler Internals
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/overview.html">
+    Overview
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/coding-standards.html">
+    Coding standards
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/diagnostics.html">
+    Diagnostics
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/debug-emit.html">
+    Debug emit
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/optimizations.html">
+    Optimizations
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/large-inputs-and-stack-overflows.html">
+    Large inputs
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/memory-usage.html">
+    Memory usage
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/compiler-startup-performance.html">
+    Startup Performance
+  </a>
+</li>             
+<li class="nav-header">
+  Language Service Internals
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/tooling-features.html">
+    Overview
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/project-builds.html">
+    Project builds
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/caches.html">
+    FSharpChecker caches
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/react.html">
+    Incrementality
+  </a>
+</li>             
+<li class="nav-header">
+  FSharp.Compiler.Service
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/tokenizer.html">
+    Tutorial: Tokenizing
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/untypedtree.html">
+    Tutorial: Expressions
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/symbols.html">
+    Tutorial: Symbols
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/editor.html">
+    Tutorial: Editor services
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/typedtree.html">
+    Tutorial: Expressions
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/project.html">
+    Tutorial: Project analysis
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/interactive.html">
+    Tutorial: Hosted execution
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/compiler.html">
+    Tutorial: Hosting the compiler
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/corelib.html">
+    Notes on FSharp.Core
+  </a>
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fcs/filesystem.html">
+    IFileSystem
+  </a>
+</li>             
+<li class="nav-header">
+  FSharp.Core
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/fsharp-core-notes.html">
+    Guidance
+  </a>
+</li>
+                <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsharp.github.io/fsharp-compiler-docs/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="masthead">
+            <h3 class="muted"><a href="https://fsharp.github.io/fsharp-compiler-docs/">F# Compiler Guide</a></h3>
+        </div>
+        <hr />
+        <div class="container" id="fsdocs-content">
+            <div>
+  <h2>
+    SemanticClassificationType Type
+  </h2>
+  <dl class="fsdocs-metadata">
+    <dt>
+      Namespace: 
+      <a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices.html">
+        FSharp.Compiler.EditorServices
+      </a>
+    </dt>
+    <dt>
+      Assembly: FSharp.Compiler.Service.dll
+    </dt>
+    <dt>
+      Base Type: 
+      <code><a href="https://docs.microsoft.com/dotnet/api/system.enum">Enum</a></code>
+    </dt>
+    <dt>
+      All Interfaces: 
+      <code><a href="https://docs.microsoft.com/dotnet/api/system.icomparable">IComparable</a></code>
+      , 
+      <code><a href="https://docs.microsoft.com/dotnet/api/system.iconvertible">IConvertible</a></code>
+      , 
+      <code><a href="https://docs.microsoft.com/dotnet/api/system.iformattable">IFormattable</a></code>
+    </dt>
+    <dt>
+      Kind: Struct
+    </dt>
+    <dt>
+      This is an enum type definition
+    </dt>
+  </dl>
+  <div class="fsdocs-xmldoc">
+    <div>
+      <p class="fsdocs-summary">
+        
+ A kind that determines what range in a source's text is semantically classified as after type-checking.
+
+      </p>
+    </div>
+  </div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div>
+    <h3>
+      Record fields
+    </h3>
+    <table class="table outer-list fsdocs-member-list">
+      <thead>
+        <tr>
+          <td class="fsdocs-member-list-header">
+            Record Field
+          </td>
+          <td class="fsdocs-member-list-header">
+            Description
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1186', 1186)" onmouseover="showTip(event, '1186', 1186)">
+                <p>
+                  <a id="ComputationExpression">
+                    <a href="#ComputationExpression">
+                      <code>ComputationExpression</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1186">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>ComputationExpression</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L24-24" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1187', 1187)" onmouseover="showTip(event, '1187', 1187)">
+                <p>
+                  <a id="ConstructorForReferenceType">
+                    <a href="#ConstructorForReferenceType">
+                      <code>ConstructorForReferenceType</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1187">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>ConstructorForReferenceType</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L35-35" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1188', 1188)" onmouseover="showTip(event, '1188', 1188)">
+                <p>
+                  <a id="ConstructorForValueType">
+                    <a href="#ConstructorForValueType">
+                      <code>ConstructorForValueType</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1188">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>ConstructorForValueType</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L36-36" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1189', 1189)" onmouseover="showTip(event, '1189', 1189)">
+                <p>
+                  <a id="Delegate">
+                    <a href="#Delegate">
+                      <code>Delegate</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1189">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>Delegate</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L44-44" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1190', 1190)" onmouseover="showTip(event, '1190', 1190)">
+                <p>
+                  <a id="DisposableLocalValue">
+                    <a href="#DisposableLocalValue">
+                      <code>DisposableLocalValue</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1190">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>DisposableLocalValue</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L32-32" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1191', 1191)" onmouseover="showTip(event, '1191', 1191)">
+                <p>
+                  <a id="DisposableTopLevelValue">
+                    <a href="#DisposableTopLevelValue">
+                      <code>DisposableTopLevelValue</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1191">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>DisposableTopLevelValue</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L31-31" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1192', 1192)" onmouseover="showTip(event, '1192', 1192)">
+                <p>
+                  <a id="DisposableType">
+                    <a href="#DisposableType">
+                      <code>DisposableType</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1192">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>DisposableType</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L30-30" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1193', 1193)" onmouseover="showTip(event, '1193', 1193)">
+                <p>
+                  <a id="Enumeration">
+                    <a href="#Enumeration">
+                      <code>Enumeration</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1193">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>Enumeration</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L26-26" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1194', 1194)" onmouseover="showTip(event, '1194', 1194)">
+                <p>
+                  <a id="Event">
+                    <a href="#Event">
+                      <code>Event</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1194">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>Event</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L43-43" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1195', 1195)" onmouseover="showTip(event, '1195', 1195)">
+                <p>
+                  <a id="Exception">
+                    <a href="#Exception">
+                      <code>Exception</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1195">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>Exception</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L41-41" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1196', 1196)" onmouseover="showTip(event, '1196', 1196)">
+                <p>
+                  <a id="ExtensionMethod">
+                    <a href="#ExtensionMethod">
+                      <code>ExtensionMethod</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1196">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>ExtensionMethod</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L34-34" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1197', 1197)" onmouseover="showTip(event, '1197', 1197)">
+                <p>
+                  <a id="Field">
+                    <a href="#Field">
+                      <code>Field</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1197">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>Field</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L42-42" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1198', 1198)" onmouseover="showTip(event, '1198', 1198)">
+                <p>
+                  <a id="Function">
+                    <a href="#Function">
+                      <code>Function</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1198">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>Function</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L18-18" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1199', 1199)" onmouseover="showTip(event, '1199', 1199)">
+                <p>
+                  <a id="Interface">
+                    <a href="#Interface">
+                      <code>Interface</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1199">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>Interface</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L27-27" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1200', 1200)" onmouseover="showTip(event, '1200', 1200)">
+                <p>
+                  <a id="IntrinsicFunction">
+                    <a href="#IntrinsicFunction">
+                      <code>IntrinsicFunction</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1200">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>IntrinsicFunction</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L25-25" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1201', 1201)" onmouseover="showTip(event, '1201', 1201)">
+                <p>
+                  <a id="Literal">
+                    <a href="#Literal">
+                      <code>Literal</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1201">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>Literal</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L37-37" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1202', 1202)" onmouseover="showTip(event, '1202', 1202)">
+                <p>
+                  <a id="LocalValue">
+                    <a href="#LocalValue">
+                      <code>LocalValue</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1202">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>LocalValue</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L47-47" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1203', 1203)" onmouseover="showTip(event, '1203', 1203)">
+                <p>
+                  <a id="Method">
+                    <a href="#Method">
+                      <code>Method</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1203">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>Method</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L33-33" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1204', 1204)" onmouseover="showTip(event, '1204', 1204)">
+                <p>
+                  <a id="Module">
+                    <a href="#Module">
+                      <code>Module</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1204">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>Module</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L21-21" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1205', 1205)" onmouseover="showTip(event, '1205', 1205)">
+                <p>
+                  <a id="MutableRecordField">
+                    <a href="#MutableRecordField">
+                      <code>MutableRecordField</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1205">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>MutableRecordField</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L39-39" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1206', 1206)" onmouseover="showTip(event, '1206', 1206)">
+                <p>
+                  <a id="MutableVar">
+                    <a href="#MutableVar">
+                      <code>MutableVar</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1206">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>MutableVar</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L20-20" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1207', 1207)" onmouseover="showTip(event, '1207', 1207)">
+                <p>
+                  <a id="NamedArgument">
+                    <a href="#NamedArgument">
+                      <code>NamedArgument</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1207">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>NamedArgument</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L45-45" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1208', 1208)" onmouseover="showTip(event, '1208', 1208)">
+                <p>
+                  <a id="Namespace">
+                    <a href="#Namespace">
+                      <code>Namespace</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1208">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>Namespace</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L22-22" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1209', 1209)" onmouseover="showTip(event, '1209', 1209)">
+                <p>
+                  <a id="Operator">
+                    <a href="#Operator">
+                      <code>Operator</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1209">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>Operator</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L29-29" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1210', 1210)" onmouseover="showTip(event, '1210', 1210)">
+                <p>
+                  <a id="Plaintext">
+                    <a href="#Plaintext">
+                      <code>Plaintext</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1210">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>Plaintext</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L50-50" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1211', 1211)" onmouseover="showTip(event, '1211', 1211)">
+                <p>
+                  <a id="Printf">
+                    <a href="#Printf">
+                      <code>Printf</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1211">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>Printf</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L23-23" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1212', 1212)" onmouseover="showTip(event, '1212', 1212)">
+                <p>
+                  <a id="Property">
+                    <a href="#Property">
+                      <code>Property</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1212">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>Property</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L19-19" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1213', 1213)" onmouseover="showTip(event, '1213', 1213)">
+                <p>
+                  <a id="RecordField">
+                    <a href="#RecordField">
+                      <code>RecordField</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1213">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>RecordField</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L38-38" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1214', 1214)" onmouseover="showTip(event, '1214', 1214)">
+                <p>
+                  <a id="RecordFieldAsFunction">
+                    <a href="#RecordFieldAsFunction">
+                      <code>RecordFieldAsFunction</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1214">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>RecordFieldAsFunction</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L40-40" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1215', 1215)" onmouseover="showTip(event, '1215', 1215)">
+                <p>
+                  <a id="ReferenceType">
+                    <a href="#ReferenceType">
+                      <code>ReferenceType</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1215">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>ReferenceType</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L14-14" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1216', 1216)" onmouseover="showTip(event, '1216', 1216)">
+                <p>
+                  <a id="Type">
+                    <a href="#Type">
+                      <code>Type</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1216">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>Type</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L48-48" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1217', 1217)" onmouseover="showTip(event, '1217', 1217)">
+                <p>
+                  <a id="TypeArgument">
+                    <a href="#TypeArgument">
+                      <code>TypeArgument</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1217">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>TypeArgument</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L28-28" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1218', 1218)" onmouseover="showTip(event, '1218', 1218)">
+                <p>
+                  <a id="TypeDef">
+                    <a href="#TypeDef">
+                      <code>TypeDef</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1218">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>TypeDef</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L49-49" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1219', 1219)" onmouseover="showTip(event, '1219', 1219)">
+                <p>
+                  <a id="UnionCase">
+                    <a href="#UnionCase">
+                      <code>UnionCase</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1219">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>UnionCase</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L16-16" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1220', 1220)" onmouseover="showTip(event, '1220', 1220)">
+                <p>
+                  <a id="UnionCaseField">
+                    <a href="#UnionCaseField">
+                      <code>UnionCaseField</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1220">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>UnionCaseField</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L17-17" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1221', 1221)" onmouseover="showTip(event, '1221', 1221)">
+                <p>
+                  <a id="Value">
+                    <a href="#Value">
+                      <code>Value</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1221">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>Value</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L46-46" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '1222', 1222)" onmouseover="showTip(event, '1222', 1222)">
+                <p>
+                  <a id="ValueType">
+                    <a href="#ValueType">
+                      <code>ValueType</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="1222">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>ValueType</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+                  </span>
+                  <br/>
+                  Modifiers: 
+                  static
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <div class="fsdocs-summary">
+              <a href="https://github.com/dotnet/fsharp//tree/master/src/fsharp/service/SemanticClassification.fsi#L15-15" class="fsdocs-source-link" title="Source on GitHub">
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github.png" class="normal"/>
+                <img src="https://fsharp.github.io/fsharp-compiler-docs/content/img/github-hover.png" class="hover"/>
+              </a>
+              <p class="fsdocs-summary">
+                
+              </p>
+            </div>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="https://fsharp.github.io/fsharp-compiler-docs/reference/fsharp-compiler-editorservices-semanticclassificationtype.html">SemanticClassificationType</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+</div>
+            
+        </div>
+
+        <!-- BEGIN SEARCH BOX: this adds support for the search box -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/JavaScript-autoComplete/1.0.4/auto-complete.css" />
+        <script type="text/javascript">var fsdocs_search_baseurl = 'https://fsharp.github.io/fsharp-compiler-docs/';</script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.8/lunr.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/JavaScript-autoComplete/1.0.4/auto-complete.min.js"></script>
+        <script type="text/javascript" src="https://fsharp.github.io/fsharp-compiler-docs/content/fsdocs-search.js"></script>
+        <!-- END SEARCH BOX: this adds support for the search box -->
+    </div>
+</body>
+
+</html>
